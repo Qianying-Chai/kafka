@@ -1,0 +1,32 @@
+.footer {
+  text-emphasis-style: center;
+  background-color: #041f41;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  height: 189px;
+  align-items: center;
+}
+
+.footer-icon {
+  font-size: 20px;
+  color: #32cd32;
+}
+
+.footer-text-left {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.footer-text-right {
+  font-size: 20px;
+}
+
+.footer-text-right-walmart {
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+.footer-text-right-global-tech {
+  padding-left: 5px;
+}

@@ -1,0 +1,17 @@
+.sider {
+  min-height: 1200px;
+}
+
+.slider-top {
+  height: 80px;
+  border-bottom: 1px solid rgb(239, 239, 239);
+}
+.slider-top-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+  letter-spacing: 1pt;
+  font-size: 17px;
+  color: #000000d9;
+}

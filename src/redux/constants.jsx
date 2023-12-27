@@ -1,0 +1,2 @@
+const SET_ITEMS_KEY = "SET_ITEMS_KEY";
+export { SET_ITEMS_KEY };
