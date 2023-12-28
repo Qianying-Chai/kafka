@@ -6,7 +6,6 @@ import { useState } from "react";
 const Header = () => {
   const [login, setLogin] = useState(true);
 
-  // console.log(login);
   return (
     <Layout>
       <Layout.Header className="header">
