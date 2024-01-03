@@ -6,6 +6,9 @@
   justify-content: space-around;
   height: 189px;
   align-items: center;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
 }
 
 .footer-icon {
