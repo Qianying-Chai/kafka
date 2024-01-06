@@ -15,77 +15,72 @@ import Support from "./pages/Resources/Support";
 import Breadcrumb from "./pages/common/Breadcrumb";
 import Footer from "./pages/common/Footer";
 import { Routes, Route } from "react-router-dom";
-import { ConfigProvider, Layout } from "antd";
+import { Layout } from "antd";
 
 function App() {
   return (
     <div className="App">
-      <ConfigProvider
-        theme={{
-          token: {},
-        }}
-      >
+      <Layout>
+        <Header />
         <Layout>
-          <Header />
-          <Layout>
-            <Sider />
-            <Layout
-              style={{
-                padding: "0 24px 24px",
-              }}
-            >
-              <Breadcrumb />
-              <Routes>
-                <Route
-                  path={categoryConstants.TOPICS.toLowerCase()}
-                  element={<Topics />}
-                />
-                <Route
-                  path={categoryConstants.TRASH.toLowerCase()}
-                  element={<Trash />}
-                />
-                <Route
-                  path={categoryConstants.SUBSCRIPTIONS.toLowerCase()}
-                  element={<Subscriptions />}
-                />
-                <Route
-                  path={categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()}
-                  element={<SubscriptionApprovals />}
-                />
-                <Route
-                  path={categoryConstants.APPLICATIONS.toLowerCase()}
-                  element={<Applications />}
-                />
-                <Route
-                  path={categoryConstants.USER_REQUESTS.toLowerCase()}
-                  element={<UserRequests />}
-                />
-                <Route
-                  path={categoryConstants.CLUSTERS.toLowerCase()}
-                  element={<Clusters />}
-                />
-                <Route
-                  path={categoryConstants.MIGRATED_CLUSTERS.toLowerCase()}
-                  element={<MigratedClusters />}
-                />
-                <Route
-                  path={categoryConstants.SUBSCRIPTION.toLowerCase()}
-                  element={<Subscription />}
-                />
-                <Route
-                  path={categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()}
-                  element={<UserRequestsLegacy />}
-                />
-                <Route
-                  path={categoryConstants.SUPPORT.toLowerCase()}
-                  element={<Support />}
-                />
-              </Routes>
-            </Layout>
+          <Sider />
+          <Layout
+            style={{
+              padding: "0 24px 24px",
+              height: "fit-content",
+            }}
+          >
+            <Breadcrumb />
+            <Routes>
+              <Route
+                path={categoryConstants.TOPICS.toLowerCase()}
+                element={<Topics />}
+              />
+              <Route
+                path={categoryConstants.TRASH.toLowerCase()}
+                element={<Trash />}
+              />
+              <Route
+                path={categoryConstants.SUBSCRIPTIONS.toLowerCase()}
+                element={<Subscriptions />}
+              />
+              <Route
+                path={categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()}
+                element={<SubscriptionApprovals />}
+              />
+              <Route
+                path={categoryConstants.APPLICATIONS.toLowerCase()}
+                element={<Applications />}
+              />
+              <Route
+                path={categoryConstants.USER_REQUESTS.toLowerCase()}
+                element={<UserRequests />}
+              />
+              <Route
+                path={categoryConstants.CLUSTERS.toLowerCase()}
+                element={<Clusters />}
+              />
+              <Route
+                path={categoryConstants.MIGRATED_CLUSTERS.toLowerCase()}
+                element={<MigratedClusters />}
+              />
+              <Route
+                path={categoryConstants.SUBSCRIPTION.toLowerCase()}
+                element={<Subscription />}
+              />
+              <Route
+                path={categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()}
+                element={<UserRequestsLegacy />}
+              />
+              <Route
+                path={categoryConstants.SUPPORT.toLowerCase()}
+                element={<Support />}
+              />
+            </Routes>
           </Layout>
-          <Footer />
         </Layout>
-      </ConfigProvider>
+        <Footer />
+      </Layout>
     </div>
   );
 }

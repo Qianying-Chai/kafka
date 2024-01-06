@@ -6,7 +6,8 @@
   color: rgb(4, 31, 65);
   letter-spacing: 1pt;
   border-bottom: 1px solid rgba(167, 164, 164, 0.3);
-  margin: 10px 0px 20px 0px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
 }
 
 .content-banner-title {
@@ -15,6 +16,7 @@
 }
 
 .content-banner-button {
-  font-size: 12px;
+  font-size: 14px;
   background-color: rgb(4, 31, 65);
+  height: 32px;
 }

@@ -1,7 +1,10 @@
 import React from "react";
 import ComponentsCard from "../Components/ComponentsCard";
+import ComponentsInput from "../Components/ComponentsInput";
+import ComponentsTable from "../Components/ComponentsTable";
+import ComponentsPagination from "../Components/ComponentsPagination";
 import Highlighter from "react-highlight-words";
-import { Button, Anchor, ConfigProvider, Space, Table, Tag } from "antd";
+import { Button, Tabs, ConfigProvider, Space, Tag } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Input } from "antd";
 import { useState, useRef } from "react";
@@ -11,12 +14,15 @@ const Subscriptions = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-
+  const onChange = (key) => {
+    setSelected(key);
+  };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
@@ -108,7 +114,7 @@ const Subscriptions = () => {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text) =>
+    onCell: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{
@@ -123,6 +129,18 @@ const Subscriptions = () => {
         text
       ),
   });
+
+  const items = [
+    {
+      key: "NonProxy",
+      label: "NonProxy",
+    },
+    {
+      key: "Proxy",
+      label: "Proxy",
+    },
+  ];
+
   const columns =
     selected === "NonProxy"
       ? [
@@ -134,10 +152,10 @@ const Subscriptions = () => {
             render: (text) => <a>{text}</a>,
           },
           {
-            title: <div>Topic Name</div>,
+            title: "Topic Name",
             dataIndex: "Topic Name",
             key: "Topic Name",
-            width: "18%",
+            width: "30%",
             render: (_, record) => (
               <Space size="middle">
                 <a> SOF0001396-testgm-DEV-testgm</a>
@@ -206,7 +224,7 @@ const Subscriptions = () => {
           {
             title: "ACL",
             key: "ACL",
-            width: "9%",
+            width: "5%",
             render: (_, record) => (
               <Space size="middle">
                 <a>Invite {record.name}</a>
@@ -226,7 +244,7 @@ const Subscriptions = () => {
           {
             title: "Status",
             key: "Status",
-            width: "9%",
+            width: "14%",
             render: (_, record) => (
               <Space
                 size="middle"
@@ -305,6 +323,7 @@ const Subscriptions = () => {
             title: "",
             dataIndex: "",
             key: "",
+            width: "5%",
             ...getColumnSearchProps("address"),
           },
         ];
@@ -341,79 +360,44 @@ const Subscriptions = () => {
             linkPaddingBlock: 6,
             linkPaddingInlineStart: 30,
             colorPrimary: "#32cd32",
-            fontSize: 18,
+            fontSize: 20,
           },
           Table: {
             headerBg: "#ffffff",
+            padding: "12px 8px",
+          },
+          Tabs: {
+            itemSelectedColor: "#41F41",
+            inkBarColor: "#06f27b",
+            itemColor: "#00000099",
+            itemHoverColor: "rgb(4, 31, 65)",
+            titleFontSize: 16,
           },
         },
+
         token: {
           colorLink: "rgb(4, 31, 65)",
         },
       }}
     >
-      <ComponentsCard>
-        <Anchor
-          direction="horizontal"
-          style={{ marginBottom: "18px" }}
-          items={[
-            {
-              key: "NonProxy",
-              href: "#NonProxy",
-              title: (
-                <div
-                  style={{
-                    color:
-                      selected === "NonProxy" ? "rgb(4, 31, 65)" : "#bfbfbf",
-                    fontWeight: "bolder",
-                  }}
-                  onClick={() => {
-                    setSelected("NonProxy");
-                  }}
-                >
-                  NonProxy
-                </div>
-              ),
-            },
-            {
-              key: "Proxy",
-              href: "#Proxy",
-              title: (
-                <div
-                  style={{
-                    color: selected === "Proxy" ? "rgb(4, 31, 65)" : "#bfbfbf",
-                    fontWeight: "bolder",
-                  }}
-                  onClick={() => {
-                    setSelected("Proxy");
-                  }}
-                >
-                  Proxy{" "}
-                </div>
-              ),
-            },
-          ]}
+      <ComponentsCard title={"Subscription"} editebutton={"true"}>
+        <Tabs
+          defaultActiveKey="NonProxy"
+          style={{ fontWeight: "bold" }}
+          items={items}
+          onChange={onChange}
         />
-
         {selected === "NonProxy" ? (
-          <Input
-            size="large"
-            placeholder="Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email, Permission, Auto-Approved, and Status"
-            prefix={<SearchOutlined />}
-            style={{ borderRadius: "0px" }}
+          <ComponentsInput
+            placeholder={
+              "Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email, Permission, Auto-Approved, and Status"
+            }
           />
         ) : (
           ""
         )}
-
-        <Table
-          style={{
-            border: "1px solid	#f0f0f0",
-            marginTop: selected === "NonProxy" ? "18px" : "36px",
-          }}
-          columns={columns}
-          dataSource={data}
-        />
+        <ComponentsTable columns={columns} data={data} />
+        <ComponentsPagination defaultPageSize={10} total={10} />
       </ComponentsCard>
     </ConfigProvider>
   );
