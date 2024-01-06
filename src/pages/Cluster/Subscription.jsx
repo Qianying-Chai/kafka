@@ -3,7 +3,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { Button, Input, Space, Table, ConfigProvider } from "antd";
-
+import ComponentsPagination from "../Components/ComponentsPagination";
+import ComponentsTable from "../Components/ComponentsTable";
 const data = [
   {
     key: "1",
@@ -130,7 +131,7 @@ const Subscription = () => {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text) =>
+    onCell: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{
@@ -203,6 +204,7 @@ const Subscription = () => {
       title: "",
       dataIndex: "",
       key: "",
+      width: "5%",
       ...getColumnSearchProps("address"),
     },
   ];
@@ -219,8 +221,9 @@ const Subscription = () => {
         },
       }}
     >
-      <ComponentsCard>
-        <Table columns={columns} dataSource={data} bordered />
+      <ComponentsCard editebutton={"true"} title={"Subscription"}>
+        <ComponentsTable columns={columns} data={data} />
+        <ComponentsPagination showQuickJumper defaultPageSize={25} total={50} />
       </ComponentsCard>
     </ConfigProvider>
   );

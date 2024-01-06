@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Style/Sider.css";
 import {
@@ -21,6 +21,7 @@ const Sider = () => {
   } = theme.useToken();
 
   const dispatch = useDispatch();
+
   const items = [
     {
       key: "Topic as a Service (Lettera)",
@@ -122,6 +123,7 @@ const Sider = () => {
     },
     {
       label: <div>Cluster (Legacy)</div>,
+      key: "Cluster (Legacy)",
       children: [
         {
           key: "Clusters",
@@ -222,6 +224,9 @@ const Sider = () => {
             itemHoverColor: "#1890ff",
             padding: 30,
           },
+          Tabs: {
+            inkBarColor: "rgb(4, 31, 65)",
+          },
         },
       }}
     >
@@ -240,6 +245,7 @@ const Sider = () => {
             marginLeft: "-12px",
           }}
         >
+          <div></div>
           <Menu
             mode="inline"
             items={items}

@@ -1,13 +1,13 @@
 import React from "react";
 import ComponentsCard from "../Components/ComponentsCard";
-import Highlighter from "react-highlight-words";
+import ComponentsInput from "../Components/ComponentsInput";
+import ComponentsTable from "../Components/ComponentsTable";
+import ComponentsPagination from "../Components/ComponentsPagination";
 import { ConfigProvider, Space, Table, Tag } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Input } from "antd";
-import { useState } from "react";
 
 const SubscriptionApprovals = () => {
-  const [selected, setSelected] = useState("NonProxy");
   const columns = [
     {
       title: "Id",
@@ -20,7 +20,7 @@ const SubscriptionApprovals = () => {
       title: <div>Topic Name</div>,
       dataIndex: "Topic Name",
       key: "Topic Name",
-      width: "18%",
+      width: "30%",
       render: (_, record) => (
         <Space size="middle">
           <a> SOF0001396-testgm-DEV-testgm</a>
@@ -89,7 +89,7 @@ const SubscriptionApprovals = () => {
     {
       title: "ACL",
       key: "ACL",
-      width: "9%",
+      width: "5%",
       render: (_, record) => (
         <Space size="middle">
           <a>Invite {record.name}</a>
@@ -109,7 +109,7 @@ const SubscriptionApprovals = () => {
     {
       title: "Status",
       key: "Status",
-      width: "9%",
+      width: "13%",
       render: (_, record) => (
         <Space
           size="middle"
@@ -167,24 +167,16 @@ const SubscriptionApprovals = () => {
         },
       }}
     >
-      <ComponentsCard>
+      <ComponentsCard title={"Subscription Approvals"}>
         <span>
-          List of subscription requests to be approved is provided here. Approve
+          List of Subscription requests to be approved is provided here. Approve
           or reject each request.
         </span>
         <div>
-          <Input
-            size="large"
-            placeholder="Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email,_ _operationType, Auto-Approved, and Status"
-            prefix={<SearchOutlined />}
-            style={{ margin: "18px 0", borderRadius: "0px" }}
-          />
+          <ComponentsInput placeholder="Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email,_ _operationType, Auto-Approved, and Status" />
         </div>
-        <Table
-          style={{ border: "1px solid	#f0f0f0" }}
-          columns={columns}
-          dataSource={data}
-        />
+        <ComponentsTable columns={columns} data={data} />
+        <ComponentsPagination defaultPageSize={10} total={10} />
       </ComponentsCard>
     </ConfigProvider>
   );
