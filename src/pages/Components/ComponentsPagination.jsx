@@ -1,4 +1,6 @@
+import React from "react";
 import { Pagination, ConfigProvider } from "antd";
+
 const ComponentsPagination = (props) => {
   return (
     <>

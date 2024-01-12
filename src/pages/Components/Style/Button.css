@@ -1,0 +1,9 @@
+.cancel-button,
+.submit-button {
+  letter-spacing: 1pt;
+  height: 32px;
+  width: 135px;
+}
+.cancel-button {
+  margin-right: 10px;
+}

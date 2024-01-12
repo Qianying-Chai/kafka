@@ -1,9 +1,24 @@
 import React from "react";
-import ComponentsCard from "../Components/ComponentsCard";
-import "./Style/Clusters.css";
-const MigratedClusters = () => {
+import ComponentsCard from "../../Components/ComponentsCard";
+import "../Style/Clusters.css";
+import categoryConstants from "../../common/categoryConstants";
+const Clusters = () => {
   return (
-    <ComponentsCard editebutton={"true"} title={"Clusters"}>
+    <ComponentsCard
+      editebutton={"true"}
+      title={categoryConstants.CLUSTERS}
+      breadcrumbitems={[
+        {
+          title: "Home",
+        },
+        {
+          title: "Kafka",
+        },
+        {
+          title: categoryConstants.CLUSTERS,
+        },
+      ]}
+    >
       <div className="clusters-content">
         <div id="clusters-text">
           <div className="text">
@@ -19,12 +34,10 @@ const MigratedClusters = () => {
           </div>
         </div>
         <div className="border">
-          <p>
-            There are currently no resources associated with yout AD Groups.
-          </p>
+          There are currently no resources associated with yout AD Groups.
         </div>
       </div>
     </ComponentsCard>
   );
 };
-export default MigratedClusters;
+export default Clusters;

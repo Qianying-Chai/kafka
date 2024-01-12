@@ -1,6 +1,6 @@
-import ComponentsCard from "../Components/ComponentsCard";
+import Card from "../Components/ComponentsCard";
 
 const Support = () => {
-  return <ComponentsCard title={"Support"}></ComponentsCard>;
+  return <Card title={"Support"}></Card>;
 };
 export default Support;

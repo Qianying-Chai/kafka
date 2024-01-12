@@ -1,10 +1,24 @@
 import React from "react";
-import ComponentsCard from "../Components/ComponentsCard";
-import "./Style/Clusters.css";
-
-const Clusters = () => {
+import Card from "../../Components/ComponentsCard";
+import categoryConstants from "../../common/categoryConstants";
+import "../Style/Clusters.css";
+const MigratedClusters = () => {
   return (
-    <ComponentsCard editebutton={"true"} title={"Clusters"}>
+    <Card
+      editebutton={"true"}
+      title={categoryConstants.CLUSTERS}
+      breadcrumbitems={[
+        {
+          title: "Home",
+        },
+        {
+          title: "Kafka",
+        },
+        {
+          title: categoryConstants.CLUSTERS,
+        },
+      ]}
+    >
       <div className="clusters-content">
         <div id="clusters-text">
           <div className="text">
@@ -25,7 +39,7 @@ const Clusters = () => {
           </p>
         </div>
       </div>
-    </ComponentsCard>
+    </Card>
   );
 };
-export default Clusters;
+export default MigratedClusters;

@@ -1,3 +1,4 @@
+import React from "react";
 import { ConfigProvider, Table } from "antd";
 
 const ComponentsTable = (props) => {

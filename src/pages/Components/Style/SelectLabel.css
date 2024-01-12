@@ -1,0 +1,12 @@
+.select-title-wrapper {
+  padding: 0 0 8px;
+  font-size: 14px;
+}
+
+.select-title-prefix {
+  color: red;
+  margin-right: 4px;
+}
+#select-title {
+  margin-right: 4px;
+}

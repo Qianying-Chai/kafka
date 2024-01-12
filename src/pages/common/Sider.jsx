@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import "./Style/Sider.css";
 import {
@@ -13,7 +13,7 @@ import {
 import { Layout, Menu, theme, ConfigProvider } from "antd";
 import categoryConstants from "./categoryConstants";
 import { useDispatch } from "react-redux";
-import { setItemsKey } from "../../redux/action";
+import { setPathName } from "../../redux/action";
 
 const Sider = () => {
   const {
@@ -32,10 +32,10 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Topics"));
+                dispatch(setPathName(categoryConstants.TOPICS.toLowerCase()));
               }}
             >
-              <Link to={`/${categoryConstants.TOPICS.toLowerCase()}`}>
+              <Link to={`/kafka/${categoryConstants.TOPICS.toLowerCase()}`}>
                 {categoryConstants.TOPICS}
               </Link>
             </div>
@@ -47,10 +47,10 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Trash"));
+                dispatch(setPathName(categoryConstants.TRASH.toLowerCase()));
               }}
             >
-              <Link to={`/${categoryConstants.TRASH.toLowerCase()}`}>
+              <Link to={`/kafka/${categoryConstants.TRASH.toLowerCase()}`}>
                 {categoryConstants.TRASH}
               </Link>
             </div>
@@ -62,10 +62,14 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Subscriptions"));
+                dispatch(
+                  setPathName(categoryConstants.SUBSCRIPTIONS.toLowerCase())
+                );
               }}
             >
-              <Link to={`/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}`}>
+              <Link
+                to={`/kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=nonProxy`}
+              >
                 {categoryConstants.SUBSCRIPTIONS}
               </Link>
             </div>
@@ -77,11 +81,15 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Subscription Approvals"));
+                dispatch(
+                  setPathName(
+                    categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()
+                  )
+                );
               }}
             >
               <Link
-                to={`/${categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()}`}
+                to={`/kafka/${categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()}`}
               >
                 {categoryConstants.SUBSCRIPTIONS_APPROVALS.replace("_", " ")}
               </Link>
@@ -94,10 +102,14 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Applications"));
+                dispatch(
+                  setPathName(categoryConstants.APPLICATIONS.toLowerCase())
+                );
               }}
             >
-              <Link to={`/${categoryConstants.APPLICATIONS.toLowerCase()}`}>
+              <Link
+                to={`/kafka/${categoryConstants.APPLICATIONS.toLowerCase()}`}
+              >
                 {categoryConstants.APPLICATIONS}
               </Link>
             </div>
@@ -109,10 +121,14 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("User Requests"));
+                dispatch(
+                  setPathName(categoryConstants.USER_REQUESTS.toLowerCase())
+                );
               }}
             >
-              <Link to={`/${categoryConstants.USER_REQUESTS.toLowerCase()}`}>
+              <Link
+                to={`/kafka/${categoryConstants.USER_REQUESTS.toLowerCase()}`}
+              >
                 {categoryConstants.USER_REQUESTS.replace("_", " ")}
               </Link>
             </div>
@@ -122,18 +138,18 @@ const Sider = () => {
       ],
     },
     {
-      label: <div>Cluster (Legacy)</div>,
-      key: "Cluster (Legacy)",
+      label: <div>Clusters (Legacy)</div>,
+      key: "Clusters (Legacy)",
       children: [
         {
           key: "Clusters",
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Clusters"));
+                dispatch(setPathName(categoryConstants.CLUSTERS.toLowerCase()));
               }}
             >
-              <Link to={`/${categoryConstants.CLUSTERS.toLowerCase()}`}>
+              <Link to={`/kafka/${categoryConstants.CLUSTERS.toLowerCase()}`}>
                 {categoryConstants.CLUSTERS}
               </Link>
             </div>
@@ -145,11 +161,13 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Migrated Clusters"));
+                dispatch(
+                  setPathName(categoryConstants.MIGRATED_CLUSTERS.toLowerCase())
+                );
               }}
             >
               <Link
-                to={`/${categoryConstants.MIGRATED_CLUSTERS.toLowerCase()}`}
+                to={`/kafka/${categoryConstants.MIGRATED_CLUSTERS.toLowerCase()}`}
               >
                 {categoryConstants.MIGRATED_CLUSTERS.replace("_", " ")}
               </Link>
@@ -162,10 +180,14 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Subscription"));
+                dispatch(
+                  setPathName(categoryConstants.SUBSCRIPTION.toLowerCase())
+                );
               }}
             >
-              <Link to={`/${categoryConstants.SUBSCRIPTION.toLowerCase()}`}>
+              <Link
+                to={`/kafka/mps-clusters-${categoryConstants.SUBSCRIPTION.toLowerCase()}`}
+              >
                 {categoryConstants.SUBSCRIPTION}
               </Link>
             </div>
@@ -177,11 +199,15 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("User Requests (Legacy)"));
+                dispatch(
+                  setPathName(
+                    categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()
+                  )
+                );
               }}
             >
               <Link
-                to={`/${categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()}`}
+                to={`/kafka/${categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()}`}
               >
                 User Requests (Legacy)
               </Link>
@@ -201,10 +227,10 @@ const Sider = () => {
           label: (
             <div
               onClick={() => {
-                dispatch(setItemsKey("Supprot"));
+                dispatch(setPathName(categoryConstants.SUPPORT.toLowerCase()));
               }}
             >
-              <Link to={`/${categoryConstants.SUPPORT.toLowerCase()}`}>
+              <Link to={`/kafka/${categoryConstants.SUPPORT.toLowerCase()}`}>
                 {categoryConstants.SUPPORT}
               </Link>
             </div>
@@ -223,11 +249,14 @@ const Sider = () => {
             itemHoverBg: "",
             itemHoverColor: "#1890ff",
             padding: 30,
+            itemBorderRadius: 0,
+            itemMarginInline: 0,
           },
           Tabs: {
             inkBarColor: "rgb(4, 31, 65)",
           },
         },
+        token: { margin: 25, padding: 0 },
       }}
     >
       <Layout.Sider
@@ -242,7 +271,7 @@ const Sider = () => {
         </div>
         <div
           style={{
-            marginLeft: "-12px",
+            marginLeft: "-6px",
           }}
         >
           <div></div>
@@ -250,6 +279,7 @@ const Sider = () => {
             mode="inline"
             items={items}
             defaultOpenKeys={["Topic as a Service (Lettera)", "RESOURCES"]}
+            // defaultSelectedKeys={"Topics"}
             style={{
               color: "#041f41",
             }}
