@@ -1,0 +1,5 @@
+.buttons-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  letter-spacing: 1pt;
+}

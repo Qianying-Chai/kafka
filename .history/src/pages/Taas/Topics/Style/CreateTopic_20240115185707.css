@@ -1,0 +1,10 @@
+.buttons-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  letter-spacing: 1pt;
+}
+
+.cancel-button {
+  margin-right: 10px;
+  letter-spacing: 1pt;
+}
