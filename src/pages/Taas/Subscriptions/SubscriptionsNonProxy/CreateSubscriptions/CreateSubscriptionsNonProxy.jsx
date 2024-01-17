@@ -15,6 +15,7 @@ const CreateSubscriptionsNonProxy = () => {
       theme={{
         token: {
           borderRadius: 0,
+          colorBgTextHover: "F5F5F5",
         },
       }}
     >
@@ -44,16 +45,11 @@ const CreateSubscriptionsNonProxy = () => {
         <SourceTopicForm />
         <TargetApplicationSelectionForm />
         <ComponentsDivider />
-        <div className="buttons-wrapper">
-          <Button shape="round" size={"medium"} className="cancel-button">
+        <div className="create-buttons-wrapper">
+          <Button shape="round" className="cancel-button">
             CANCEL
           </Button>
-          <Button
-            shape="round"
-            size={"medium"}
-            disabled
-            className="submit-button"
-          >
+          <Button shape="round" disabled className="submit-button">
             SUBMIT
           </Button>
         </div>

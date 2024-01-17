@@ -2,12 +2,12 @@ import React from "react";
 import ComponentsContent from "../../../../Components/ComponentsContent";
 import categoryConstants from "../../../../common/categoryConstants";
 import ComponentsBreadcrumb from "../../../../Components/ComponentsBreadcrumb";
-import ComponentsDivider from "../../../../Components/ComponentsDivider";
 import ComponentsTitle from "../../../../Components/ComponentsTitle";
-import SubscriptionName from "./Form/SubscriptionName";
-import SourceTopicSelection from "./Form/SourceTopicSelection";
-import TargetApplicationSelection from "./Form/TargetApplicationSelection";
-import RequesterDetails from "./Form/RequesterDetails";
+import DeliverySubscriptionForm from "./Form/DeliverySubscriptionForm";
+import SourceTopicSelectionForm from "./Form/SourceTopicSelectionForm";
+import TargetApplicationSelectionForm from "./Form/TargetApplicationSelectionForm";
+import ConsumerDetailsForm from "./Form/ComsumerDetailsForm";
+import RequesterDetailsForm from "./Form/RequesterDetailsForm";
 import { Button, ConfigProvider, Divider } from "antd";
 const CreateSubscriptionsProxy = () => {
   return (
@@ -15,6 +15,7 @@ const CreateSubscriptionsProxy = () => {
       theme={{
         token: {
           borderRadius: 0,
+          colorBgTextHover: "F5F5F5",
         },
       }}
     >
@@ -41,23 +42,18 @@ const CreateSubscriptionsProxy = () => {
         </div>
       </div>
       <ComponentsContent>
-        <SubscriptionName />
-        <SourceTopicSelection />
-
-        <TargetApplicationSelection />
+        <DeliverySubscriptionForm />
+        <SourceTopicSelectionForm />
+        <TargetApplicationSelectionForm />
         <Divider />
-        <RequesterDetails />
-        <ComponentsDivider />
-        <div className="buttons-wrapper">
-          <Button shape="round" size={"medium"} className="cancel-button">
+        <RequesterDetailsForm />
+        <ConsumerDetailsForm />
+        <Divider />
+        <div className="create-buttons-wrapper">
+          <Button shape="round" className="cancel-button">
             CANCEL
           </Button>
-          <Button
-            shape="round"
-            size={"medium"}
-            disabled
-            className="submit-button"
-          >
+          <Button shape="round" disabled className="submit-button">
             SUBMIT
           </Button>
         </div>

@@ -1,14 +1,17 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
+import SelectTitle from "../../../../Components/SelectTitle";
+import { Col, Row, Select, Spin } from "antd";
+import { UserOutlined, InfoCircleFilled } from "@ant-design/icons";
+
 import debounce from "lodash/debounce";
-import { Col, Row, Select, Spin, Typography } from "antd";
-import SelectTitle from "../../../../../Components/SelectTitle";
+import { Typography, Input } from "antd";
+
 const { Title } = Typography;
-const TargetApplicationSelectionForm = () => {
+const EnvironmentsForm = () => {
   function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
     const [fetching, setFetching] = useState(false);
     const [options, setOptions] = useState([]);
     const fetchRef = useRef(0);
-
     const debounceFetcher = useMemo(() => {
       const loadOptions = (value) => {
         fetchRef.current += 1;
@@ -17,6 +20,7 @@ const TargetApplicationSelectionForm = () => {
         setFetching(true);
         fetchOptions(value).then((newOptions) => {
           if (fetchId !== fetchRef.current) {
+            // for fetch callback order
             return;
           }
           setOptions(newOptions);
@@ -36,9 +40,6 @@ const TargetApplicationSelectionForm = () => {
       />
     );
   }
-
-  const [value, setValue] = useState([]);
-
   async function fetchUserList(username) {
     console.log("fetching user", username);
     return fetch("https://randomuser.me/api/?results=5")
@@ -50,42 +51,71 @@ const TargetApplicationSelectionForm = () => {
         }))
       );
   }
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  const [value, setValue] = useState([]);
 
   return (
-    <>
+    <div>
       <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
-        Target Application Selection
+        Environments
       </Title>
       <Row gutter={24}>
-        <Col span={12}>
-          <SelectTitle title={"APM ID"} />
+        <Col span={8}>
+          <div className="Select-title-wrapper">
+            <span className="prefix">*</span>Environment
+          </div>
           <DebounceSelect
+            className="create-flow-select"
             mode="multiple"
             value={value}
             fetchOptions={fetchUserList}
             onChange={(newValue) => {
               setValue(newValue);
             }}
-            className="create-flow-select"
           />
         </Col>
-        <Col span={12}>
-          <SelectTitle title={"Application Name / App Key"} />
-          <Select
-            mode="tags"
+        <Col span={8}>
+          <div className="Select-title-wrapper">
+            <span className="prefix">*</span>Regions
+          </div>
+          <DebounceSelect
             className="create-flow-select"
-            placeholder="Select Application Name or create a new one by App Key"
-            onChange={handleChange}
-            showSearch={false}
-            suffixIcon=""
+            mode="multiple"
+            value={value}
+            fetchOptions={fetchUserList}
+            onChange={(newValue) => {
+              setValue(newValue);
+            }}
+          />
+        </Col>
+        <Col span={8}>
+          <SelectTitle title={"Number of brokers"} />
+          <DebounceSelect
+            className="create-flow-select"
+            mode="multiple"
+            value={value}
+            fetchOptions={fetchUserList}
+            onChange={(newValue) => {
+              setValue(newValue);
+            }}
+          />
+          {/* <Input placeholder="default size" /> */}
+        </Col>
+      </Row>
+      <Row gutter={24}>
+        <Col span={8}>
+          <SelectTitle title={"Storage Size(per broker) in GB"} />
+          <DebounceSelect
+            className="create-flow-select"
+            mode="multiple"
+            value={value}
+            fetchOptions={fetchUserList}
+            onChange={(newValue) => {
+              setValue(newValue);
+            }}
           />
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
-
-export default TargetApplicationSelectionForm;
+export default EnvironmentsForm;

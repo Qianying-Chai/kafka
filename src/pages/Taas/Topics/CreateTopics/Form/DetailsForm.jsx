@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
 import SelectTitle from "../../../../Components/SelectTitle";
-import "../../Style/DetailsForm.css";
 import { Col, Row, Select, Spin } from "antd";
 import debounce from "lodash/debounce";
 import { Typography } from "antd";
@@ -53,18 +52,12 @@ const DetailsForm = () => {
   const [value, setValue] = useState([]);
 
   return (
-    <>
+    <div>
       <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
         Details
       </Title>
-      <Row style={{ display: "flex", flexFlow: "nowrap" }}>
-        <Col
-          span={6}
-          className="col"
-          style={{
-            marginRight: "12px",
-          }}
-        >
+      <Row gutter={24}>
+        <Col span={6}>
           <SelectTitle title={"APM ID"} />
           <DebounceSelect
             mode="multiple"
@@ -73,26 +66,21 @@ const DetailsForm = () => {
             onChange={(newValue) => {
               setValue(newValue);
             }}
-            className="select"
+            className="create-flow-select"
           />
         </Col>
-        <Col
-          span={18}
-          style={{
-            padding: "0 12px",
-          }}
-        >
+        <Col span={18}>
           <SelectTitle title={"Application Name / App Key"} />
           <Select
             mode="tags"
-            className="select"
+            className="create-flow-select"
             placeholder="Select Application Name or create a new one by App Key"
             showSearch={false}
             suffixIcon=""
           />
         </Col>
       </Row>
-    </>
+    </div>
   );
 };
 export default DetailsForm;

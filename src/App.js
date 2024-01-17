@@ -11,7 +11,8 @@ import CreateSubscriptionsProxy from "./pages/Taas/Subscriptions/SubscriptionsPr
 import SubscriptionsProxy from "./pages/Taas/Subscriptions/SubscriptionsProxy/SubscriptionsProxy";
 import Applications from "./pages/Taas/Applications/Applications";
 import UserRequests from "./pages/Taas/UserRequests/UserRequests";
-import Clusters from "./pages/Cluster/Clusters";
+import Clusters from "./pages/Cluster/Clusters/Clusters";
+import CreateCluster from "./pages/Cluster/Clusters/CreateCluster/CreateCluster";
 import MigratedClusters from "./pages/Cluster/MigratedClusters";
 import Subscription from "./pages/Cluster/Subscription";
 import UserRequestsLegacy from "./pages/Cluster/UserRequestsLegacy";
@@ -29,7 +30,7 @@ function App() {
           <Sider />
           <Layout
             style={{
-              padding: "0 24px 24px",
+              padding: "25px 50px 25px 40px",
               height: "fit-content",
             }}
           >
@@ -76,6 +77,11 @@ function App() {
                 path={`kafka/${categoryConstants.CLUSTERS.toLowerCase()}`}
                 element={<Clusters />}
               />
+              <Route
+                path={`kafka/${categoryConstants.CLUSTERS.toLowerCase()}/create`}
+                element={<CreateCluster />}
+              />
+
               <Route
                 path={`kafka/migrated-clusters`}
                 element={<MigratedClusters />}

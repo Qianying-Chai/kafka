@@ -1,14 +1,14 @@
 import React, { useMemo, useState, useRef } from "react";
+import SelectTitle from "../../../../../Components/SelectTitle";
 import debounce from "lodash/debounce";
 import { Col, Row, Select, Spin, Typography } from "antd";
-import SelectTitle from "../../../../../Components/SelectTitle";
 const { Title } = Typography;
-const TargetApplicationSelectionForm = () => {
+
+const SourceTopicSelectionForm = () => {
   function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
     const [fetching, setFetching] = useState(false);
     const [options, setOptions] = useState([]);
     const fetchRef = useRef(0);
-
     const debounceFetcher = useMemo(() => {
       const loadOptions = (value) => {
         fetchRef.current += 1;
@@ -17,6 +17,7 @@ const TargetApplicationSelectionForm = () => {
         setFetching(true);
         fetchOptions(value).then((newOptions) => {
           if (fetchId !== fetchRef.current) {
+            // for fetch callback order
             return;
           }
           setOptions(newOptions);
@@ -50,37 +51,32 @@ const TargetApplicationSelectionForm = () => {
         }))
       );
   }
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  // const handleChange = (value) => {
+  //   console.log(`selected ${value}`);
+  // };
 
   return (
     <>
-      <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
-        Target Application Selection
+      <Title
+        level={4}
+        style={{
+          paddingTop: "20px",
+          color: "#000000D9",
+        }}
+      >
+        Source Topic Selection
       </Title>
       <Row gutter={24}>
-        <Col span={12}>
-          <SelectTitle title={"APM ID"} />
+        <Col span={8}>
+          <SelectTitle title={"Topic:"} />
           <DebounceSelect
+            className="create-flow-select"
             mode="multiple"
             value={value}
             fetchOptions={fetchUserList}
             onChange={(newValue) => {
               setValue(newValue);
             }}
-            className="create-flow-select"
-          />
-        </Col>
-        <Col span={12}>
-          <SelectTitle title={"Application Name / App Key"} />
-          <Select
-            mode="tags"
-            className="create-flow-select"
-            placeholder="Select Application Name or create a new one by App Key"
-            onChange={handleChange}
-            showSearch={false}
-            suffixIcon=""
           />
         </Col>
       </Row>
@@ -88,4 +84,4 @@ const TargetApplicationSelectionForm = () => {
   );
 };
 
-export default TargetApplicationSelectionForm;
+export default SourceTopicSelectionForm;

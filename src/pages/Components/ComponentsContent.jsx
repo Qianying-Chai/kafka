@@ -1,5 +1,5 @@
 import React from "react";
-import "../common/Style/Content.css";
+import "./Style/ComponentsContent.css";
 import { Layout, theme } from "antd";
 
 const ComponentsContent = (props) => {

@@ -56,12 +56,19 @@ const TargetApplicationSelectionForm = () => {
 
   return (
     <>
-      <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
+      {" "}
+      <Title
+        level={4}
+        style={{
+          paddingTop: "20px",
+          color: "#000000D9",
+        }}
+      >
         Target Application Selection
       </Title>
       <Row gutter={24}>
-        <Col span={12}>
-          <SelectTitle title={"APM ID"} />
+        <Col span={8}>
+          <SelectTitle title={"APM ID:"} />
           <DebounceSelect
             mode="multiple"
             value={value}
@@ -72,15 +79,26 @@ const TargetApplicationSelectionForm = () => {
             className="create-flow-select"
           />
         </Col>
-        <Col span={12}>
-          <SelectTitle title={"Application Name / App Key"} />
+        <Col span={8}>
+          <SelectTitle title={"Application Name / App Key:"} />
           <Select
             mode="tags"
             className="create-flow-select"
-            placeholder="Select Application Name or create a new one by App Key"
+            placeholder="Select Application Name/App Key"
             onChange={handleChange}
             showSearch={false}
-            suffixIcon=""
+            disabled
+          />
+        </Col>
+        <Col span={8}>
+          <SelectTitle title={"Environment:"} />
+          <Select
+            mode="tags"
+            className="create-flow-select"
+            placeholder="Select Environment"
+            onChange={handleChange}
+            showSearch={false}
+            disabled
           />
         </Col>
       </Row>

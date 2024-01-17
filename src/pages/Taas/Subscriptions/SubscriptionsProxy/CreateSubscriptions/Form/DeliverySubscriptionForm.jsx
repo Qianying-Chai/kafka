@@ -1,14 +1,13 @@
-import React, { useMemo, useState, useRef } from "react";
-import debounce from "lodash/debounce";
-import { Col, Row, Select, Spin, Typography } from "antd";
+import React, { useMemo, useRef, useState } from "react";
 import SelectTitle from "../../../../../Components/SelectTitle";
-const { Title } = Typography;
-const TargetApplicationSelectionForm = () => {
+import { Col, Row, Select, Spin } from "antd";
+import debounce from "lodash/debounce";
+
+const DeliverySubscriptionForm = () => {
   function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
     const [fetching, setFetching] = useState(false);
     const [options, setOptions] = useState([]);
     const fetchRef = useRef(0);
-
     const debounceFetcher = useMemo(() => {
       const loadOptions = (value) => {
         fetchRef.current += 1;
@@ -17,6 +16,7 @@ const TargetApplicationSelectionForm = () => {
         setFetching(true);
         fetchOptions(value).then((newOptions) => {
           if (fetchId !== fetchRef.current) {
+            // for fetch callback order
             return;
           }
           setOptions(newOptions);
@@ -36,9 +36,6 @@ const TargetApplicationSelectionForm = () => {
       />
     );
   }
-
-  const [value, setValue] = useState([]);
-
   async function fetchUserList(username) {
     console.log("fetching user", username);
     return fetch("https://randomuser.me/api/?results=5")
@@ -50,18 +47,13 @@ const TargetApplicationSelectionForm = () => {
         }))
       );
   }
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  const [value, setValue] = useState([]);
 
   return (
     <>
-      <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
-        Target Application Selection
-      </Title>
       <Row gutter={24}>
-        <Col span={12}>
-          <SelectTitle title={"APM ID"} />
+        <Col span={8}>
+          <SelectTitle title={"Subscription Name:"} />
           <DebounceSelect
             mode="multiple"
             value={value}
@@ -72,20 +64,8 @@ const TargetApplicationSelectionForm = () => {
             className="create-flow-select"
           />
         </Col>
-        <Col span={12}>
-          <SelectTitle title={"Application Name / App Key"} />
-          <Select
-            mode="tags"
-            className="create-flow-select"
-            placeholder="Select Application Name or create a new one by App Key"
-            onChange={handleChange}
-            showSearch={false}
-            suffixIcon=""
-          />
-        </Col>
       </Row>
     </>
   );
 };
-
-export default TargetApplicationSelectionForm;
+export default DeliverySubscriptionForm;

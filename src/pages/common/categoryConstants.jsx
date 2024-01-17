@@ -12,6 +12,7 @@ const categoryConstants = {
   SUPPORT: "Support",
   CREATE_TOPIC: "Create Topic",
   CREATE_SUBSCRIPTION: "Create Subscription",
+  CREATE_CLUSTER: "Create Cluster",
 };
 
 export default categoryConstants;

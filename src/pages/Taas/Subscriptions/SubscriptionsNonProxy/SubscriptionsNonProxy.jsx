@@ -206,6 +206,7 @@ const SubscriptionsNonProxy = () => {
 
         token: {
           colorLink: "rgb(4, 31, 65)",
+          borderRadius: 0,
         },
       }}
     >

@@ -3,11 +3,16 @@
   margin-right: 4px;
 }
 
+.Select-title-wrapper,
+.Select-title {
+  color: rgba(0, 0, 0, 0.85);
+}
+
 .Select-title-wrapper {
   padding-bottom: 8px;
+  padding: "0 12px";
 }
 
 .Select-title {
   margin-right: 5px;
-  color: rgba(0, 0, 0, 0.85);
 }

@@ -65,16 +65,11 @@ const SourceTopicForm = () => {
         There will be displayed only first 1000 topics relevant for the APM ID
         and/or Environment and/or Topic Name Filter.
       </div>
-      <Row style={{ display: "flex", flexFlow: "nowrap" }}>
-        <Col
-          span={8}
-          style={{
-            marginRight: "12px",
-          }}
-        >
+      <Row gutter={24}>
+        <Col span={8}>
           <SelectTitle title={"APM ID"} />
           <DebounceSelect
-            className="select"
+            className="create-flow-select"
             mode="multiple"
             value={value}
             fetchOptions={fetchUserList}
@@ -87,15 +82,10 @@ const SourceTopicForm = () => {
             }}
           />
         </Col>
-        <Col
-          span={8}
-          style={{
-            padding: "0 12px",
-          }}
-        >
+        <Col span={8}>
           <div className="Select-title-wrapper">Environment</div>
           <DebounceSelect
-            className="select"
+            className="create-flow-select"
             mode="multiple"
             value={value}
             fetchOptions={fetchUserList}
@@ -104,29 +94,19 @@ const SourceTopicForm = () => {
             }}
           />
         </Col>
-        <Col
-          span={8}
-          style={{
-            padding: "0 12px",
-          }}
-        >
+        <Col span={8}>
           <div className="Select-title-wrapper">Topic Name Filter</div>
           <Select
             mode="tags"
-            className="select"
+            className="create-flow-select"
             onChange={handleChange}
             showSearch={false}
             suffixIcon=""
           />
         </Col>
       </Row>
-      <Row>
-        <Col
-          span={24}
-          style={{
-            marginRight: "12px",
-          }}
-        >
+      <Row gutter={24}>
+        <Col span={24}>
           <div className="Select-title-wrapper">
             <span className="prefix">*</span>Topic Name
           </div>
@@ -138,7 +118,7 @@ const SourceTopicForm = () => {
             onChange={(newValue) => {
               setValue(newValue);
             }}
-            className="select"
+            className="create-flow-select"
           />
         </Col>
       </Row>

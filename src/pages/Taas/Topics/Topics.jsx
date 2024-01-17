@@ -6,7 +6,7 @@ import categoryConstants from "../../common/categoryConstants";
 import ComponentsContent from "../../Components/ComponentsContent";
 import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../Components/ComponentsTitle";
-import { Space, Button, ConfigProvider } from "antd";
+import { Space, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
@@ -113,13 +113,7 @@ const CreateTopics = () => {
     },
   ];
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          borderRadius: 0,
-        },
-      }}
-    >
+    <>
       <div>
         <ComponentsBreadcrumb
           items={[
@@ -164,7 +158,7 @@ const CreateTopics = () => {
         <ComponentsTable columns={columns} data={data} />
         <ComponentsPagination showQuickJumper defaultPageSize={25} total={25} />
       </ComponentsContent>
-    </ConfigProvider>
+    </>
   );
 };
 export default CreateTopics;

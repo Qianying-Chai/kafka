@@ -8,12 +8,9 @@ const ComponentsBreadcrumb = (props) => {
         components: {
           Breadcrumb: {
             lastItemColor: "#000000D9",
-            linkColor: "#075179",
+            linkColor: "#0751A9",
             itemColor: "#0751A9",
-            linkHoverColor: "#F5F5F5",
-          },
-          token: {
-            colorBgTextHover: "#F5F5F5",
+            linkHoverColor: "#0751A9",
           },
         },
       }}
