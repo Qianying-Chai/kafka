@@ -3,11 +3,10 @@ import categoryConstants from "../../../common/categoryConstants";
 import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
-import ComponentsDivider from "../../../Components/ComponentsDivider";
 import DetailsForm from "./Form/DetailsForm";
 import EnvironmentsForm from "./Form/EnvironmentsForm";
 import "../../../Taas/Style/CreateFlow.css";
-import { Button, ConfigProvider } from "antd";
+import { Button, ConfigProvider, Divider } from "antd";
 
 const CreateCluster = () => {
   return (
@@ -16,6 +15,9 @@ const CreateCluster = () => {
         token: {
           borderRadius: 0,
           colorBgTextHover: "F5F5F5",
+          colorSplit: "rgba(0, 0, 0, 0.85)",
+          marginLG: 16,
+          colorPrimaryHover: "#0958d9",
         },
       }}
     >
@@ -44,12 +46,13 @@ const CreateCluster = () => {
       <ComponentsContent>
         <DetailsForm />
         <EnvironmentsForm />
-        <ComponentsDivider />
+        <Divider />
         <div className="create-buttons-wrapper">
           <Button shape="round" className="cancel-button">
             CANCEL
           </Button>
           <Button
+            type="primary"
             shape="round"
             className="submit-button primary-submit-button "
           >

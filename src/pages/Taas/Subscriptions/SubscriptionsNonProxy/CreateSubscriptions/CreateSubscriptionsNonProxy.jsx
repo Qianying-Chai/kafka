@@ -1,13 +1,12 @@
 import React from "react";
 import ComponentsBreadcrumb from "../../../../Components/ComponentsBreadcrumb";
 import ComponentsContent from "../../../../Components/ComponentsContent";
-import ComponentsDivider from "../../../../Components/ComponentsDivider";
 import ComponentsTitle from "../../../../Components/ComponentsTitle";
 import categoryConstants from "../../../../common/categoryConstants";
 import SourceTopicForm from "./Form/SourceTopicForm";
 import TargetApplicationSelectionForm from "./Form/TargetApplicationSelectionForm";
 import "../../Style/CreateSubscriptionNonproxy.css";
-import { Button, ConfigProvider } from "antd";
+import { Button, ConfigProvider, Divider } from "antd";
 
 const CreateSubscriptionsNonProxy = () => {
   return (
@@ -16,6 +15,9 @@ const CreateSubscriptionsNonProxy = () => {
         token: {
           borderRadius: 0,
           colorBgTextHover: "F5F5F5",
+          colorSplit: "rgba(0, 0, 0, 0.85)",
+          marginLG: 16,
+          colorPrimaryHover: "#0958d9",
         },
       }}
     >
@@ -44,12 +46,12 @@ const CreateSubscriptionsNonProxy = () => {
       <ComponentsContent>
         <SourceTopicForm />
         <TargetApplicationSelectionForm />
-        <ComponentsDivider />
+        <Divider />
         <div className="create-buttons-wrapper">
           <Button shape="round" className="cancel-button">
             CANCEL
           </Button>
-          <Button shape="round" disabled className="submit-button">
+          <Button shape="round" disabled className="disable-submit-button">
             SUBMIT
           </Button>
         </div>

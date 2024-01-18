@@ -1,5 +1,5 @@
 import React from "react";
-import SelectTitle from "../../../../../Components/SelectTitle";
+import SelectTitle from "../../../../Components/SelectTitle";
 import { Col, Row, Select, Typography } from "antd";
 const { Title } = Typography;
 
@@ -17,11 +17,19 @@ const SourceTopicSelectionForm = () => {
       </Title>
       <Row gutter={24}>
         <Col span={8}>
-          <SelectTitle title={"Topic:"} />
-
+          <SelectTitle title={"Cluster:"} />
           <Select
             showSearch
             className="create-flow-select"
+            placeholder="Select Cluster"
+          />
+        </Col>
+        <Col span={8}>
+          <SelectTitle title={"Topic:"} />
+          <Select
+            showSearch
+            className="create-flow-select"
+            disabled
             placeholder="Select Topic"
           />
         </Col>

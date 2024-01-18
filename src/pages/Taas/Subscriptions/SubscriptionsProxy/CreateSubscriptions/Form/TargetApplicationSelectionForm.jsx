@@ -69,14 +69,11 @@ const TargetApplicationSelectionForm = () => {
       <Row gutter={24}>
         <Col span={8}>
           <SelectTitle title={"APM ID:"} />
-          <DebounceSelect
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+
+          <Select
+            showSearch
             className="create-flow-select"
+            placeholder="Input to Search APM iD"
           />
         </Col>
         <Col span={8}>

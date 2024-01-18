@@ -4,9 +4,8 @@ import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
 import DetailsForm from "./Form/DetailsForm";
-import ComponentsDivider from "../../../Components/ComponentsDivider";
 import "../../../Taas/Style/CreateFlow.css";
-import { Button, ConfigProvider } from "antd";
+import { Button, ConfigProvider, Divider } from "antd";
 
 const CreateTopic = () => {
   return (
@@ -15,6 +14,9 @@ const CreateTopic = () => {
         token: {
           borderRadius: 0,
           colorBgTextHover: "F5F5F5",
+          colorSplit: "rgba(0, 0, 0, 0.85)",
+          marginLG: 16,
+          colorPrimaryHover: "#0958d9",
         },
       }}
     >
@@ -42,12 +44,12 @@ const CreateTopic = () => {
       </div>
       <ComponentsContent>
         <DetailsForm />
-        <ComponentsDivider />
+        <Divider />
         <div className="create-buttons-wrapper">
           <Button shape="round" className="cancel-button">
             CANCEL
           </Button>
-          <Button shape="round" disabled className="submit-button">
+          <Button shape="round" disabled className="disable-submit-button">
             SUBMIT
           </Button>
         </div>

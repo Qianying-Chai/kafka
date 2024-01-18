@@ -54,6 +54,17 @@ const SourceTopicForm = () => {
     console.log(`selected ${value}`);
   };
 
+  const environmentOptions = [
+    {
+      label: "PROD",
+      value: "PROD",
+    },
+    {
+      label: "DEV",
+      value: "DEV",
+    },
+  ];
+
   return (
     <>
       <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
@@ -84,14 +95,11 @@ const SourceTopicForm = () => {
         </Col>
         <Col span={8}>
           <div className="Select-title-wrapper">Environment</div>
-          <DebounceSelect
+
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+            options={environmentOptions}
           />
         </Col>
         <Col span={8}>

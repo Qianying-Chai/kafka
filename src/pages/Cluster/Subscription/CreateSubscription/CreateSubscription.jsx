@@ -1,15 +1,15 @@
 import React from "react";
-import ComponentsContent from "../../../../Components/ComponentsContent";
-import categoryConstants from "../../../../common/categoryConstants";
-import ComponentsBreadcrumb from "../../../../Components/ComponentsBreadcrumb";
-import ComponentsTitle from "../../../../Components/ComponentsTitle";
-import DeliverySubscriptionForm from "./Form/DeliverySubscriptionForm";
+import ComponentsContent from "../../../Components/ComponentsContent";
+import categoryConstants from "../../../common/categoryConstants";
+import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
+import ComponentsTitle from "../../../Components/ComponentsTitle";
+import DeliverySubscriptionNameForm from "./Form/DeliverySubscriptionNameForm";
 import SourceTopicSelectionForm from "./Form/SourceTopicSelectionForm";
-import TargetApplicationSelectionForm from "./Form/TargetApplicationSelectionForm";
-import ConsumerDetailsForm from "./Form/ComsumerDetailsForm";
+import TargetApplicationForm from "./Form/TargetApplicationSelection";
 import RequesterDetailsForm from "./Form/RequesterDetailsForm";
+import ConsumerDetailsForm from "../../../Taas/Subscriptions/SubscriptionsProxy/CreateSubscriptions/Form/ComsumerDetailsForm";
 import { Button, ConfigProvider, Divider } from "antd";
-const CreateSubscriptionsProxy = () => {
+const CreateSubscription = () => {
   return (
     <ConfigProvider
       theme={{
@@ -43,10 +43,9 @@ const CreateSubscriptionsProxy = () => {
         </div>
       </div>
       <ComponentsContent>
-        <DeliverySubscriptionForm />
+        <DeliverySubscriptionNameForm />
         <SourceTopicSelectionForm />
-        <TargetApplicationSelectionForm />
-        <Divider />
+        <TargetApplicationForm />
         <RequesterDetailsForm />
         <ConsumerDetailsForm />
         <Divider />
@@ -62,4 +61,4 @@ const CreateSubscriptionsProxy = () => {
     </ConfigProvider>
   );
 };
-export default CreateSubscriptionsProxy;
+export default CreateSubscription;

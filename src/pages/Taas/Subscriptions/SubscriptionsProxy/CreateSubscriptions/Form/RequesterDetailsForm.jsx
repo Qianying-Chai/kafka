@@ -55,6 +55,151 @@ const RequesterDetailsForm = () => {
   // const handleChange = (value) => {
   //   console.log(`selected ${value}`);
   // };
+  const adGroupOptions = [
+    {
+      label: "DXIO-ADMN",
+      value: "DXIO-ADMN",
+    },
+    {
+      label: "mps_admin",
+      value: "mps_admin",
+    },
+    {
+      label: "Internet_Download_Users_HO",
+      value: "Internet_Download_Users_HO",
+    },
+    {
+      label: "tech-assistant-beta-testers",
+      value: "tech-assistant-beta-testers",
+    },
+    {
+      label: "PWV_Users",
+      value: "PWV_Users",
+    },
+    {
+      label: "AIVendors",
+      value: "AIVendors",
+    },
+    {
+      label: "hub-dev-community",
+      value: "hub-dev-community",
+    },
+  ];
+
+  const applicationTierOptions = [
+    {
+      label: "Tier 0",
+      value: "Tier 0",
+      desc: "Tier 0",
+    },
+    {
+      label: "Tier 1",
+      value: "Tier 1",
+      desc: "Tier 1",
+    },
+    {
+      label: "Tier 2",
+      value: "Tier 2",
+      desc: "Tier 2",
+    },
+    {
+      label: "Tier 3",
+      value: "Tier 3",
+      desc: "Tier 3",
+    },
+  ];
+
+  const dataComplianceOptions = [
+    {
+      label: "GENERAL",
+      value: "GENERAL",
+    },
+    {
+      label: "UNSECURED",
+      value: "UNSECURED",
+    },
+    {
+      label: "SECURED",
+      value: "SECURED",
+    },
+    {
+      label: "HIPAA",
+      value: "HIPAA",
+    },
+    {
+      label: "SOX",
+      value: "SOX",
+    },
+    {
+      label: "PII",
+      value: "PII",
+    },
+    {
+      label: "PCI",
+      value: "PCI",
+    },
+    {
+      label: "HIPAA_SOX",
+      value: "HIPAA_SOX",
+    },
+  ];
+
+  const trProductIdOptions = [
+    {
+      label: "2525 | DP-DIM-ISP",
+      value: "Tier 3",
+      desc: "Tier 3",
+    },
+  ];
+  const dataClassificationOptions = [
+    {
+      label: "NON-SENSITIVE",
+      value: "NON-SENSITIVE",
+    },
+    {
+      label: "SENSITIVE",
+      value: "SENSITIVE",
+    },
+    {
+      label: "HIGHLY_SENSITIVE",
+      value: "HIGHLY_SensitiveSENSITIVE",
+    },
+  ];
+
+  const marketOptions = [
+    {
+      label: "USGM",
+      value: "USGM",
+    },
+    {
+      label: "USGR",
+      value: "USGR",
+    },
+    {
+      label: "USSAMS",
+      value: "USSAMS",
+    },
+    {
+      label: "UKGM",
+      value: "UKGM",
+    },
+    {
+      label: "UKGR",
+      value: "UKGR",
+    },
+    {
+      label: "MXGR",
+      value: "MXGR",
+    },
+    {
+      label: "MXGM",
+      value: "MXGM",
+    },
+    {
+      label: "MXSAMS",
+      value: "MXSAMS",
+    },
+  ];
   const items = [
     {
       key: "Requester Details",
@@ -73,29 +218,32 @@ const RequesterDetailsForm = () => {
           <Row gutter={24}>
             <Col span={8}>
               <SelectTitle title={"AD Group:"} />
-              <DebounceSelect
+              <Select
+                showSearch
                 className="create-flow-select"
-                mode="multiple"
-                value={value}
-                fetchOptions={fetchUserList}
-                onChange={(newValue) => {
-                  setValue(newValue);
-                }}
-                placeholder="Select AD Group:"
+                options={adGroupOptions}
+                placeholder="Select AD Group"
               />
             </Col>
             <Col span={8}>
               <SelectTitle title={"Application Tire:"} />
+
               <Select
-                mode="tags"
+                showSearch
                 className="create-flow-select"
                 placeholder="Select Application Tire"
-                showSearch={false}
+                options={applicationTierOptions}
               />
             </Col>
             <Col span={8}>
               <SelectTitle title={"Data Compliance for the Cluster:"} />
-              <Input placeholder="Input Data Compliance for the Cluster" />
+
+              <Select
+                showSearch
+                className="create-flow-select"
+                placeholder="Select Data Compliance for the Cluster"
+                options={dataComplianceOptions}
+              />
             </Col>
           </Row>
           <Row gutter={24}>
@@ -124,15 +272,11 @@ const RequesterDetailsForm = () => {
           <Row gutter={24}>
             <Col span={8}>
               <SelectTitle title={"TR Product ID:"} />
-              <DebounceSelect
+              <Select
+                showSearch
                 className="create-flow-select"
-                mode="multiple"
-                value={value}
-                fetchOptions={fetchUserList}
                 placeholder="Select TR Product ID"
-                onChange={(newValue) => {
-                  setValue(newValue);
-                }}
+                options={trProductIdOptions}
               />
             </Col>
             <Col span={8}>
@@ -145,24 +289,22 @@ const RequesterDetailsForm = () => {
 
             <Col span={8}>
               <SelectTitle title={"Data Classification"} />
-              <Input
+              <Select
+                showSearch
+                className="create-flow-select"
+                options={dataClassificationOptions}
                 placeholder="Select Data Classification"
-                className="create-flow-input"
               />
             </Col>
           </Row>
           <Row gutter={24}>
             <Col span={8}>
               <SelectTitle title={"Market:"} />
-              <DebounceSelect
-                className="create-flow-select"
-                mode="multiple"
-                value={value}
-                fetchOptions={fetchUserList}
+              <Select
+                showSearch
                 placeholder="Select Market"
-                onChange={(newValue) => {
-                  setValue(newValue);
-                }}
+                className="create-flow-select"
+                options={marketOptions}
               />
             </Col>
           </Row>

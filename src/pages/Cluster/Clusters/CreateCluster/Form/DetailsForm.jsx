@@ -4,7 +4,7 @@ import { Col, Row, Select, Spin } from "antd";
 import { UserOutlined, InfoCircleFilled } from "@ant-design/icons";
 
 import debounce from "lodash/debounce";
-import { Typography, Input } from "antd";
+import { Typography, Input, Space } from "antd";
 
 const { Title } = Typography;
 const DetailsForm = () => {
@@ -52,6 +52,142 @@ const DetailsForm = () => {
       );
   }
   const [value, setValue] = useState([]);
+  const applicationTierOptions = [
+    {
+      label: "Tier 0",
+      value: "Tier 0",
+      desc: "Tier 0",
+    },
+    {
+      label: "Tier 1",
+      value: "Tier 1",
+      desc: "Tier 1",
+    },
+    {
+      label: "Tier 2",
+      value: "Tier 2",
+      desc: "Tier 2",
+    },
+    {
+      label: "Tier 3",
+      value: "Tier 3",
+      desc: "Tier 3",
+    },
+  ];
+  const trProductOptions = [
+    {
+      label: (
+        <div>
+          <UserOutlined />
+          <span> 3555 | GTP - Messaging Platform - Lettera</span>
+        </div>
+      ),
+      value: "1",
+    },
+  ];
+
+  const adGroupOptions = [
+    {
+      label: "DXIO-ADMN",
+      value: "DXIO-ADMN",
+    },
+    {
+      label: "mps_admin",
+      value: "mps_admin",
+    },
+    {
+      label: "Internet_Download_Users_HO",
+      value: "Internet_Download_Users_HO",
+    },
+    {
+      label: "tech-assistant-beta-testers",
+      value: "tech-assistant-beta-testers",
+    },
+    {
+      label: "PWV_Users",
+      value: "PWV_Users",
+    },
+    {
+      label: "AIVendors",
+      value: "AIVendors",
+    },
+    {
+      label: "hub-dev-community",
+      value: "hub-dev-community",
+    },
+  ];
+
+  const dataClassificationOptions = [
+    {
+      label: "Non-Sensitive",
+      value: "Non-Sensitive",
+    },
+    {
+      label: "Sensitive",
+      value: "Sensitive",
+    },
+    {
+      label: "Highly Sensitive",
+      value: "Highly Sensitive",
+    },
+  ];
+  const marketOptions = [
+    {
+      label: "USGM",
+      value: "USGM",
+    },
+    {
+      label: "USGR",
+      value: "USGR",
+    },
+    {
+      label: "USSAMS",
+      value: "USSAMS",
+    },
+    {
+      label: "UKGM",
+      value: "UKGM",
+    },
+    {
+      label: "UKGR",
+      value: "UKGR",
+    },
+    {
+      label: "MXGR",
+      value: "MXGR",
+    },
+    {
+      label: "MXGM",
+      value: "MXGM",
+    },
+    {
+      label: "MXSAMS",
+      value: "MXSAMS",
+    },
+  ];
+
+  const dataComplianceOptions = [
+    {
+      label: "HIPAA",
+      value: "HIPAA",
+    },
+    {
+      label: "SOX",
+      value: "SOX",
+    },
+    {
+      label: "HIPPA and SOX",
+      value: "HIPPA and SOX",
+    },
+    {
+      label: "SECURED",
+      value: "SECURED",
+    },
+    {
+      label: "UNSECURED (not recommended)",
+      value: "UNSECURED (not recommended)",
+    },
+  ];
 
   return (
     <div>
@@ -63,7 +199,7 @@ const DetailsForm = () => {
           <div className="Select-title-wrapper">
             <span className="prefix">*</span>Name
           </div>
-          <Input placeholder="Input Name" className="create-flow-input" />
+          <Input className="create-flow-input" />
         </Col>
         <Col span={8}>
           <SelectTitle title={"APM ID"} />
@@ -79,30 +215,22 @@ const DetailsForm = () => {
         </Col>
         <Col span={8}>
           <SelectTitle title={"TR Product"} />
-          <DebounceSelect
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            placeholder="3555 | GTP - Messaging Platform - Lettera"
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+            defaultValue={["1"]}
+            options={trProductOptions}
           />
-          {/* <Input placeholder="default size" /> */}
         </Col>
       </Row>
-      <Row gutter={24} style={{ paddingTop: "20px" }}>
+      <div style={{ height: "24px" }}></div>
+      <Row gutter={24}>
         <Col span={8}>
           <SelectTitle title={"AD Group"} />
-          <DebounceSelect
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+            options={adGroupOptions}
           />
         </Col>
         <Col span={8}>
@@ -124,27 +252,19 @@ const DetailsForm = () => {
         </Col>
         <Col span={8}>
           <SelectTitle title={"Data Classification"} />
-          <DebounceSelect
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+            options={dataClassificationOptions}
           />
         </Col>
         <Col span={8}>
           <SelectTitle title={"Application Tier"} />
-          <DebounceSelect
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
-            placeholder="Tier 3"
+            defaultValue={["Tier 3"]}
+            options={applicationTierOptions}
           />
         </Col>
       </Row>
@@ -153,26 +273,18 @@ const DetailsForm = () => {
           <div className="Select-title-wrapper">
             <span className="prefix">*</span>Market
           </div>
-          <DebounceSelect
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+            options={marketOptions}
           />
         </Col>
         <Col span={8}>
           <SelectTitle title={"Data Compliance for the Cluster"} />
-          <DebounceSelect
+          <Select
+            showSearch
             className="create-flow-select"
-            mode="multiple"
-            value={value}
-            fetchOptions={fetchUserList}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
+            options={dataComplianceOptions}
           />
         </Col>
       </Row>

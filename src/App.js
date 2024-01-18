@@ -13,9 +13,10 @@ import Applications from "./pages/Taas/Applications/Applications";
 import UserRequests from "./pages/Taas/UserRequests/UserRequests";
 import Clusters from "./pages/Cluster/Clusters/Clusters";
 import CreateCluster from "./pages/Cluster/Clusters/CreateCluster/CreateCluster";
-import MigratedClusters from "./pages/Cluster/MigratedClusters";
-import Subscription from "./pages/Cluster/Subscription";
-import UserRequestsLegacy from "./pages/Cluster/UserRequestsLegacy";
+import MigratedClusters from "./pages/Cluster/MigratedClusters/MigratedClusters";
+import Subscription from "./pages/Cluster/Subscription/Subscription";
+import CreateSubscription from "./pages/Cluster/Subscription/CreateSubscription/CreateSubscription";
+import UserRequestsLegacy from "./pages/Cluster/UserRequestsLegacy/UserRequestsLegacy";
 import Support from "./pages/Resources/Support";
 import Footer from "./pages/common/Footer";
 import { Routes, Route } from "react-router-dom";
@@ -89,6 +90,10 @@ function App() {
               <Route
                 path={`kafka/mps-clusters-subscriptions`}
                 element={<Subscription />}
+              />
+              <Route
+                path={`kafka/mps-clusters-subscriptions/create`}
+                element={<CreateSubscription />}
               />
               <Route
                 path={`kafka/legacy-requests`}

@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import SelectTitle from "../../../../Components/SelectTitle";
-import { Col, Row, Select, Spin } from "antd";
+import { Col, ConfigProvider, Row, Select, Spin } from "antd";
 import debounce from "lodash/debounce";
 import { Typography } from "antd";
 
@@ -51,8 +51,26 @@ const DetailsForm = () => {
   }
   const [value, setValue] = useState([]);
 
+  const ApplicationNameOptions = [
+    {
+      label: "Failed fetching options from url: ",
+      value: "Application Name",
+    },
+  ];
+
   return (
-    <div>
+    <ConfigProvider
+      theme={{
+        components: {
+          Select: {
+            optionActiveBg: "#ffffff",
+          },
+        },
+        token: {
+          colorText: "#d9d9d9",
+        },
+      }}
+    >
       <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
         Details
       </Title>
@@ -77,10 +95,11 @@ const DetailsForm = () => {
             placeholder="Select Application Name or create a new one by App Key"
             showSearch={false}
             suffixIcon=""
+            options={ApplicationNameOptions}
           />
         </Col>
       </Row>
-    </div>
+    </ConfigProvider>
   );
 };
 export default DetailsForm;

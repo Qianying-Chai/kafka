@@ -2,13 +2,14 @@ import { SearchOutlined } from "@ant-design/icons";
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { Button, Input, Space, ConfigProvider } from "antd";
-import ComponentsPagination from "../Components/ComponentsPagination";
-import ComponentsTable from "../Components/ComponentsTable";
-import categoryConstants from "../common/categoryConstants";
-import ComponentsTitle from "../Components/ComponentsTitle";
-import ComponentsBreadcrumb from "../Components/ComponentsBreadcrumb";
+import ComponentsPagination from "../../Components/ComponentsPagination";
+import ComponentsTable from "../../Components/ComponentsTable";
+import categoryConstants from "../../common/categoryConstants";
+import ComponentsTitle from "../../Components/ComponentsTitle";
+import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
 import { PlusOutlined } from "@ant-design/icons";
-import ComponentsContent from "../Components/ComponentsContent";
+import ComponentsContent from "../../Components/ComponentsContent";
+import { Link } from "react-router-dom";
 
 const data = [
   {
@@ -242,9 +243,15 @@ const Subscription = () => {
         />
         <div className="content-banner">
           <ComponentsTitle title={categoryConstants.SUBSCRIPTION} />
-          <Button shape="round" size="medium" className="content-banner-button">
-            <PlusOutlined />
-            {`CREATE ${categoryConstants.SUBSCRIPTION.toLocaleUpperCase()}`}
+          <Button
+            shape="round"
+            className="content-banner-button"
+            type="primary"
+          >
+            <Link to={`/kafka/mps-clusters-subscriptions/create`}>
+              <PlusOutlined style={{ marginRight: "8px" }} />
+              {categoryConstants.CREATE_SUBSCRIPTION.toUpperCase()}
+            </Link>
           </Button>
         </div>
       </div>

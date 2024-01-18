@@ -1,12 +1,12 @@
 import React from "react";
-import ComponentsTable from "../Components/ComponentsTable";
-import ComponentsInput from "../Components/ComponentsInput";
-import ComponentsPagination from "../Components/ComponentsPagination";
-import categoryConstants from "../common/categoryConstants";
-import ComponentsTitle from "../Components/ComponentsTitle";
-import ComponentsBreadcrumb from "../Components/ComponentsBreadcrumb";
-import ComponentsContent from "../Components/ComponentsContent";
-
+import ComponentsTable from "../../Components/ComponentsTable";
+import ComponentsInput from "../../Components/ComponentsInput";
+import ComponentsPagination from "../../Components/ComponentsPagination";
+import categoryConstants from "../../common/categoryConstants";
+import ComponentsTitle from "../../Components/ComponentsTitle";
+import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
+import ComponentsContent from "../../Components/ComponentsContent";
+import { Link } from "react-router-dom";
 import { Space, Tag } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
 
@@ -144,8 +144,11 @@ const UserRequestsLegacy = () => {
       <ComponentsContent title={categoryConstants.USERE_REQUESTS_LEGACY}>
         <p className="content-text">
           Legacy page for user requests. Please visit out{" "}
-          <span style={{ color: "#0958d9" }}>TaaS User Requests </span>for our
-          new one
+          <span style={{ color: "#0958d9" }}>
+            {" "}
+            <Link to={`/kafka/requests`}>TaaS User Requests</Link>{" "}
+          </span>
+          for our new one
         </p>
         <ComponentsInput
           placeholder={

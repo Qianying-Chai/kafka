@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef } from "react";
 import debounce from "lodash/debounce";
-import { Col, Row, Select, Spin, Typography } from "antd";
+import { Col, Row, Select, Spin, Typography, ConfigProvider } from "antd";
 import SelectTitle from "../../../../../Components/SelectTitle";
 const { Title } = Typography;
 const TargetApplicationSelectionForm = () => {
@@ -54,8 +54,26 @@ const TargetApplicationSelectionForm = () => {
     console.log(`selected ${value}`);
   };
 
+  const ApplicationNameOptions = [
+    {
+      label: "Failed fetching options from url: ",
+      value: "Application Name",
+    },
+  ];
+
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        components: {
+          Select: {
+            optionActiveBg: "#ffffff",
+          },
+        },
+        token: {
+          colorText: "#d9d9d9",
+        },
+      }}
+    >
       <Title level={4} style={{ fontWeight: "normal", color: "#000000D9" }}>
         Target Application Selection
       </Title>
@@ -81,10 +99,11 @@ const TargetApplicationSelectionForm = () => {
             onChange={handleChange}
             showSearch={false}
             suffixIcon=""
+            options={ApplicationNameOptions}
           />
         </Col>
       </Row>
-    </>
+    </ConfigProvider>
   );
 };
 

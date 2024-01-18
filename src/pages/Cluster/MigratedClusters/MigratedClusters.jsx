@@ -1,11 +1,11 @@
 import React from "react";
-import "./Style/Clusters.css";
-import categoryConstants from "../common/categoryConstants";
-import ComponentsTitle from "../Components/ComponentsTitle";
-import ComponentsBreadcrumb from "../Components/ComponentsBreadcrumb";
+import "../Style/Clusters.css";
+import categoryConstants from "../../common/categoryConstants";
+import ComponentsTitle from "../../Components/ComponentsTitle";
+import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
 import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import ComponentsContent from "../Components/ComponentsContent";
+import ComponentsContent from "../../Components/ComponentsContent";
 
 import { Link } from "react-router-dom";
 
@@ -28,9 +28,17 @@ const MigratedClusters = () => {
         />
         <div className="content-banner">
           <ComponentsTitle title={categoryConstants.CLUSTERS} />
-          <Button shape="round" size="medium" className="content-banner-button">
-            <PlusOutlined />
-            {`CREATE ${categoryConstants.CLUSTERS.toLocaleUpperCase()}`}
+          <Button
+            shape="round"
+            className="content-banner-button"
+            type="primary"
+          >
+            <Link
+              to={`/kafka/${categoryConstants.CLUSTERS.toLowerCase()}/create`}
+            >
+              <PlusOutlined style={{ marginRight: "8px" }} />
+              {categoryConstants.CREATE_CLUSTER.toUpperCase()}
+            </Link>
           </Button>
         </div>
       </div>

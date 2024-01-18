@@ -1,36 +1,30 @@
 import React, { useRef, useState } from "react";
-import SelectTitle from "../../../../../Components/SelectTitle";
+import SelectTitle from "../../../../Components/SelectTitle";
 import { Col, Row, Divider, Input, Select, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-const DeliverySubscriptionForm = () => {
-  const [items, setItems] = useState([
-    "mpa-rk-test",
-    "mps-taas-mgaddam",
-    "mps-rk-test-01",
-    "mps-test-jq-1",
-  ]);
+
+const DeliverySubscriptionNameForm = () => {
+  // const [items, setItems] = useState(["jack", "lucy"]);
   const [name, setName] = useState("");
   const inputRef = useRef(null);
   const onNameChange = (event) => {
     setName(event.target.value);
   };
 
-  let index = 0;
+  // let index = 0;
   const addItem = (e) => {
     e.preventDefault();
-    setItems([...items, name || `New item ${index++}`]);
+    // setItems([...items, name || `New item ${index++}`]);
     setName("");
     setTimeout(() => {
       inputRef.current?.focus();
     }, 0);
   };
-
   return (
     <>
       <Row gutter={24}>
         <Col span={8}>
           <SelectTitle title={"Subscription Name:"} />
-
           <Select
             className="create-flow-select"
             placeholder="Select Subscription Name"
@@ -70,14 +64,14 @@ const DeliverySubscriptionForm = () => {
                 </div>
               </>
             )}
-            options={items.map((item) => ({
-              label: item,
-              value: item,
-            }))}
+            // options={items.map((item) => ({
+            //   label: item,
+            //   value: item,
+            // }))}
           />
         </Col>
       </Row>
     </>
   );
 };
-export default DeliverySubscriptionForm;
+export default DeliverySubscriptionNameForm;

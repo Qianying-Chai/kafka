@@ -29,7 +29,6 @@ const Clusters = () => {
           <ComponentsTitle title={categoryConstants.CLUSTERS} />
           <Button
             shape="round"
-            size="medium"
             className="content-banner-button"
             type="primary"
           >
