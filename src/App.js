@@ -1,6 +1,7 @@
 import Header from "./pages/common/Header";
 import Sider from "./pages/common/Sider.jsx";
 import categoryConstants from "./pages/common/categoryConstants";
+import Home from "./pages/common/Home.jsx";
 import Topics from "./pages/Taas/Topics/Topics";
 import CreateTopic from "./pages/Taas/Topics/CreateTopics/CreateTopic";
 import Trash from "./pages/Taas/Trash/Trash";
@@ -36,6 +37,7 @@ function App() {
             }}
           >
             <Routes>
+              <Route path={"/"} element={<Home />} />
               <Route
                 path={`kafka/${categoryConstants.TOPICS.toLowerCase()}`}
                 element={<Topics />}

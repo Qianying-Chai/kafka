@@ -1,15 +1,26 @@
-import { SET_ITEMS_KEY } from "./constants";
+// constants
+const SET_TAAS_SUB_NONPROXY_DATA = "SET_TAAS_SUB_NONPROXY_DATA";
 const initialState = {
-  itemsKey: "",
+  taasSubNonProxyData: {},
 };
+
+//reducer
 const reducer = (state = initialState, action) => {
   const { type, payload } = action;
   switch (type) {
-    case SET_ITEMS_KEY:
-      return { ...state, itemsKey: payload };
+    case SET_TAAS_SUB_NONPROXY_DATA:
+      return { ...state, taasSubNonProxyData: payload };
     default:
       return state;
   }
 };
 
 export default reducer;
+
+//action
+export function setTaasSubNonProxyData(taasSubNonProxyData) {
+  return {
+    type: SET_TAAS_SUB_NONPROXY_DATA,
+    payload: taasSubNonProxyData,
+  };
+}

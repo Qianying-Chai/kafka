@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsInput from "../../../Components/ComponentsInput";
@@ -7,11 +7,29 @@ import ComponentsPagination from "../../../Components/ComponentsPagination";
 import categoryConstants from "../../../common/categoryConstants";
 import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
-
+import { setTaasSubNonProxyData } from "../../../../redux/reducer";
+import { useDispatch, useSelector } from "react-redux";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Tabs, ConfigProvider, Space, Tag } from "antd";
-
+import { Alert, Flex, Spin } from "antd";
+import {
+  TableOutlined,
+  CheckCircleFilled,
+  MoreOutlined,
+} from "@ant-design/icons";
 const SubscriptionsNonProxy = () => {
+  const breadcrumb = [
+    {
+      title: "Home",
+    },
+    {
+      title: "Kafka",
+    },
+    {
+      title: categoryConstants.SUBSCRIPTIONS,
+    },
+  ];
+
   const items = [
     {
       key: "NonProxy",
@@ -34,115 +52,77 @@ const SubscriptionsNonProxy = () => {
       ),
     },
   ];
+
   const columns = [
     {
       title: "Id",
-      dataIndex: "Id",
       key: "Id",
       width: "9%",
-      render: (text) => <a>{text}</a>,
+      render: (_, record) => <a>{record.id}</a>,
     },
     {
       title: "Topic Name",
-      dataIndex: "Topic Name",
       key: "Topic Name",
       width: "30%",
-      render: (_, record) => (
-        <Space size="middle">
-          <a> SOF0001396-testgm-DEV-testgm</a>
-        </Space>
-      ),
+      render: (_, record) => <a>{record.topicName}</a>,
     },
     {
       title: "APM ID",
-      dataIndex: "APM ID",
       key: "APM ID",
       width: "9%",
+      render: (_, record) => <a>{record.apmId}</a>,
     },
     {
       title: "Application on Name",
       key: "Application on Name",
-      dataIndex: "Application on Name",
       width: "9%",
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      render: (_, record) => <a>{record.applicationName}</a>,
     },
     {
       title: "AD Group",
       key: "AD Group",
       width: "9%",
       ellipsis: true,
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-        </Space>
-      ),
+      render: (_, record) => <a>{record.adGroup}</a>,
     },
     {
       title: "DL Notification on Email",
       key: "DL Notification on Email",
       width: "9%",
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-        </Space>
-      ),
+      render: (_, record) => <a>{record.dlNotificationOnEmail}</a>,
     },
     {
       title: "Permission",
       key: "Permission",
       width: "9%",
-
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-        </Space>
-      ),
+      render: (_, record) => <a>{record.permission}</a>,
     },
     {
       title: "ACL",
       key: "ACL",
       width: "5%",
       render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-        </Space>
+        <a>
+          <TableOutlined />
+        </a>
       ),
     },
     {
       title: "Auto-Approved",
       key: "Auto-Approved",
       width: "9%",
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-        </Space>
-      ),
     },
     {
       title: "Status",
       key: "Status",
       width: "14%",
       render: (_, record) => (
-        <Space
-          size="middle"
-          style={{ wordWrap: "break-word", wordBreak: "break-word" }}
-        >
-          <a>Invite {record.name}</a>
-        </Space>
+        <>
+          <CheckCircleFilled style={{ marginRight: "3px" }} />
+          <a>
+            {record.status.charAt(0) + record.status.slice(1).toLowerCase()}
+          </a>
+        </>
       ),
     },
     {
@@ -150,37 +130,47 @@ const SubscriptionsNonProxy = () => {
       key: "",
       width: "9%",
       render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-        </Space>
+        <a>
+          <MoreOutlined />
+        </a>
       ),
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      tags: ["nice", "developer"],
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-      tags: ["loser"],
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sydney No. 1 Lake Park",
-      tags: ["cool", "teacher"],
-    },
-  ];
+  const [isloading, setIsLoading] = useState(true);
+  const [data, setData] = useState([]);
 
+  // const dispatch = useDispatch();
+
+  useEffect(() => {
+    const url = "http://localhost:1337/api/subscriptions";
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        setIsLoading(false);
+        console.log(res.data);
+        let covData = [];
+        res.data.forEach((item) => {
+          covData.push({
+            key: item.id,
+            id: item.id,
+            topicName: item.attributes.topicName,
+            apmId: item.attributes.apmId,
+            applicationName: item.attributes.applicationName,
+            adGroup: item.attributes.activeDirectoryGroup,
+            dlNotificationOnEmail: item.attributes.distributionEmail,
+            permission: item.attributes.permission,
+            autoApproved: "",
+            status: item.attributes.status,
+          });
+        });
+        setData(covData);
+
+        // dispatch(setTaasSubNonProxyData(covData));
+      })
+      .catch((error) => console.log(222, error));
+  }, []);
+  console.log(111, data);
   return (
     <ConfigProvider
       theme={{
@@ -211,19 +201,7 @@ const SubscriptionsNonProxy = () => {
       }}
     >
       <div>
-        <ComponentsBreadcrumb
-          items={[
-            {
-              title: "Home",
-            },
-            {
-              title: "Kafka",
-            },
-            {
-              title: categoryConstants.SUBSCRIPTIONS,
-            },
-          ]}
-        />
+        <ComponentsBreadcrumb items={breadcrumb} />
         <div className="content-banner">
           <ComponentsTitle title={categoryConstants.SUBSCRIPTIONS} />
           <Button
@@ -241,12 +219,12 @@ const SubscriptionsNonProxy = () => {
           </Button>
         </div>
       </div>
+
       <ComponentsContent>
         <Tabs
           defaultActiveKey="NonProxy"
           style={{ fontWeight: "bold" }}
           items={items}
-          // onChange={onChange}
         />
 
         <ComponentsInput
@@ -254,7 +232,13 @@ const SubscriptionsNonProxy = () => {
             "Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email, Permission, Auto-Approved, and Status"
           }
         />
-        <ComponentsTable columns={columns} data={data} />
+        {isloading ? (
+          <Spin tip="Loading" size="large">
+            <div className="content" />
+          </Spin>
+        ) : (
+          <ComponentsTable columns={columns} data={data} />
+        )}
         <ComponentsPagination defaultPageSize={10} total={10} />
       </ComponentsContent>
     </ConfigProvider>
