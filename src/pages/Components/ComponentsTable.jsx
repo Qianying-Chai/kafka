@@ -10,17 +10,13 @@ const ComponentsTable = (props) => {
             headerColor: "#041F41",
           },
         },
-        token: {
-          colorLink: "rgb(4, 31, 65)",
-          borderRadius: 0,
-        },
       }}
     >
       <Table
         style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
         columns={props.columns}
         dataSource={props.data}
-        pagination={false}
+        // pagination={false}
       />
     </ConfigProvider>
   );

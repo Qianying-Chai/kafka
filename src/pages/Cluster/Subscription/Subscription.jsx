@@ -1,5 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Highlighter from "react-highlight-words";
 import { Button, Input, Space, ConfigProvider } from "antd";
 import ComponentsPagination from "../../Components/ComponentsPagination";
@@ -7,37 +7,23 @@ import ComponentsTable from "../../Components/ComponentsTable";
 import categoryConstants from "../../common/categoryConstants";
 import ComponentsTitle from "../../Components/ComponentsTitle";
 import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, MoreOutlined } from "@ant-design/icons";
 import ComponentsContent from "../../Components/ComponentsContent";
 import { Link } from "react-router-dom";
 
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-];
 const Subscription = () => {
+  const breadcrumb = [
+    {
+      title: "Home",
+    },
+    {
+      title: "Kafka",
+    },
+    {
+      title: categoryConstants.SUBSCRIPTION,
+    },
+  ];
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -152,68 +138,110 @@ const Subscription = () => {
         text
       ),
   });
+
   const columns = [
     {
       title: "Subscription Name",
       dataIndex: "Subscription Name",
       key: "Subscription Name",
       width: "13%",
-      ...getColumnSearchProps("name"),
-      sorter: (a, b) => a.address.length - b.address.length,
+      ...getColumnSearchProps("Subscription Name"),
+      sorter: (a, b) => a.subscriptionname.length - b.subscriptionname.length,
       sortDirections: ["descend", "ascend"],
+      render: (_, record) => <a>{record.subscriptionname}</a>,
     },
     {
       title: "APM Id",
       dataIndex: "APM Id",
       key: "APM Id",
       width: "13%",
-      ...getColumnSearchProps("age"),
-      sorter: (a, b) => a.address.length - b.address.length,
+      ...getColumnSearchProps("APM Id"),
+      sorter: (a, b) => a.apmid.length - b.apmid.length,
       sortDirections: ["descend", "ascend"],
+      render: (_, record) => <a>{record.apmid}</a>,
     },
     {
       title: "AD Group",
       dataIndex: "AD Group",
       key: "AD Group",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("AD Group"),
+      render: (_, record) => <a>{record.adgroup}</a>,
     },
     {
       title: "End Point URI",
       dataIndex: "End Point URI",
       key: "End Point URI",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ellipsis: true,
+      ...getColumnSearchProps("End Point URI"),
+      render: (_, record) => <a>{record.endpointurl}</a>,
     },
     {
       title: "Topic",
       dataIndex: "Topic",
       key: "Topic",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("Topic"),
+      render: (_, record) => <a>{record.topic}</a>,
     },
     {
       title: "Cluster",
       dataIndex: "Cluster",
       key: "Cluster",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("Cluster"),
+      render: (_, record) => <a>{record.cluster}</a>,
     },
     {
       title: "Slack Channel",
       dataIndex: "Slack Channel",
       key: "Slack Channel",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("Slack Channel"),
+      render: (_, record) => <a>{record.slackchannel}</a>,
     },
     {
-      title: "",
+      title: "Action",
       dataIndex: "",
       key: "",
       width: "5%",
-      ...getColumnSearchProps("address"),
+      render: (_, record) => (
+        <a>
+          <MoreOutlined />
+        </a>
+      ),
     },
   ];
+
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const CULSTER_SUBSCRIPTION_URL =
+      "http://localhost:1337/api/cluster-subscriptions";
+    fetch(CULSTER_SUBSCRIPTION_URL)
+      .then((res) => res.json())
+      .then((res) => {
+        setIsLoading(false);
+        const covData = [];
+        res.data.forEach((i) =>
+          covData.push({
+            key: i.id,
+            subscriptionname: i.attributes.mpsAppName,
+            id: i.id,
+            apmid: i.attributes.apmId,
+            adgroup: i.attributes.adGroup,
+            endpointurl: i.attributes.endpoint,
+            topic: i.attributes.topicName,
+            slackchannel: i.attributes.channelName,
+            cluster: i.attributes.clusterName,
+          })
+        );
+        setData(covData);
+      })
+      .catch((error) => console.log(error));
+  }, []);
   return (
     <ConfigProvider
       theme={{
@@ -228,19 +256,7 @@ const Subscription = () => {
       }}
     >
       <div>
-        <ComponentsBreadcrumb
-          items={[
-            {
-              title: "Home",
-            },
-            {
-              title: "Kafka",
-            },
-            {
-              title: categoryConstants.SUBSCRIPTION,
-            },
-          ]}
-        />
+        <ComponentsBreadcrumb items={breadcrumb} />
         <div className="content-banner">
           <ComponentsTitle title={categoryConstants.SUBSCRIPTION} />
           <Button
@@ -256,8 +272,18 @@ const Subscription = () => {
         </div>
       </div>
       <ComponentsContent>
-        <ComponentsTable columns={columns} data={data} />
-        <ComponentsPagination showQuickJumper defaultPageSize={25} total={50} />
+        <ComponentsTable
+          columns={columns}
+          data={data}
+          pagination={{
+            showSizeChanger: true,
+            showQuickJumper: true,
+            total: data.length,
+            defaultPageSize: 10,
+            size: "small",
+            defaultCurrent: 1,
+          }}
+        />
       </ComponentsContent>
     </ConfigProvider>
   );

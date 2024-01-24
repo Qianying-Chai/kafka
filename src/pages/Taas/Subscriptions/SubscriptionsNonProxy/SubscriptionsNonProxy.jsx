@@ -148,7 +148,6 @@ const SubscriptionsNonProxy = () => {
       .then((res) => res.json())
       .then((res) => {
         setIsLoading(false);
-        console.log(res.data);
         let covData = [];
         res.data.forEach((item) => {
           covData.push({
@@ -170,7 +169,7 @@ const SubscriptionsNonProxy = () => {
       })
       .catch((error) => console.log(222, error));
   }, []);
-  console.log(111, data);
+
   return (
     <ConfigProvider
       theme={{
@@ -195,7 +194,7 @@ const SubscriptionsNonProxy = () => {
         },
 
         token: {
-          colorLink: "rgb(4, 31, 65)",
+          colorLink: "#000000D9",
           borderRadius: 0,
         },
       }}
@@ -226,20 +225,21 @@ const SubscriptionsNonProxy = () => {
           style={{ fontWeight: "bold" }}
           items={items}
         />
-
-        <ComponentsInput
-          placeholder={
-            "Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email, Permission, Auto-Approved, and Status"
-          }
-        />
         {isloading ? (
-          <Spin tip="Loading" size="large">
+          <Spin size="large">
             <div className="content" />
           </Spin>
         ) : (
-          <ComponentsTable columns={columns} data={data} />
+          <>
+            <ComponentsInput
+              placeholder={
+                "Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email, Permission, Auto-Approved, and Status"
+              }
+            />
+            <ComponentsTable columns={columns} data={data} />
+          </>
         )}
-        <ComponentsPagination defaultPageSize={10} total={10} />
+        <ComponentsPagination defaultPageSize={10} total={data.length} />
       </ComponentsContent>
     </ConfigProvider>
   );

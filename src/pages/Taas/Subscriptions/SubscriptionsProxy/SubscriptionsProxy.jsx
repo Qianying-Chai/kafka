@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsTable from "../../../Components/ComponentsTable";
@@ -10,17 +10,15 @@ import ComponentsTitle from "../../../Components/ComponentsTitle";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Tabs, ConfigProvider, Space } from "antd";
 import Highlighter from "react-highlight-words";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, MoreOutlined } from "@ant-design/icons";
+
 import { Input } from "antd";
-import { useState, useRef } from "react";
 
 const SubscriptionsProxy = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  // const onChange = (key) => {
 
-  // };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -156,6 +154,7 @@ const SubscriptionsProxy = () => {
       ),
     },
   ];
+
   const columns = [
     {
       title: "Subscription Name",
@@ -163,85 +162,92 @@ const SubscriptionsProxy = () => {
       key: "Subscription Name",
       width: "13%",
       ...getColumnSearchProps("Subscription Name"),
-      sorter: (a, b) => a.address.length - b.address.length,
+      sorter: (a, b) => a.subscriptionname.length - b.subscriptionname.length,
       sortDirections: ["descend", "ascend"],
+      render: (_, record) => <a>{record.subscriptionname}</a>,
     },
     {
       title: "APM Id",
       dataIndex: "APM Id",
       key: "APM Id",
       width: "13%",
-      ...getColumnSearchProps("age"),
-      sorter: (a, b) => a.address.length - b.address.length,
+      ...getColumnSearchProps("APM Id"),
+      sorter: (a, b) => a.apmid.length - b.apmid.length,
       sortDirections: ["descend", "ascend"],
+      render: (_, record) => <a>{record.apmid}</a>,
     },
     {
       title: "AD Group",
       dataIndex: "AD Group",
       key: "AD Group",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("AD Group"),
+      render: (_, record) => <a>{record.adgroup}</a>,
     },
     {
       title: "End Point URI",
       dataIndex: "End Point URI",
       key: "End Point URI",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ellipsis: true,
+      ...getColumnSearchProps("End Point URI"),
+      render: (_, record) => <a>{record.endpointurl}</a>,
     },
     {
       title: "Topic",
       dataIndex: "Topic",
       key: "Topic",
       width: "13%",
-      ...getColumnSearchProps("address"),
-    },
-    {
-      title: "Cluster",
-      dataIndex: "Cluster",
-      key: "Cluster",
-      width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("Topic"),
+      render: (_, record) => <a>{record.topic}</a>,
     },
     {
       title: "Slack Channel",
       dataIndex: "Slack Channel",
       key: "Slack Channel",
       width: "13%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("Slack Channel"),
+      render: (_, record) => <a>{record.slackchannel}</a>,
     },
     {
-      title: "",
+      title: "Action",
       dataIndex: "",
       key: "",
       width: "5%",
-      ...getColumnSearchProps("address"),
+      render: (_, record) => (
+        <a>
+          <MoreOutlined />
+        </a>
+      ),
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      tags: ["nice", "developer"],
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-      tags: ["loser"],
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sydney No. 1 Lake Park",
-      tags: ["cool", "teacher"],
-    },
-  ];
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState([]);
+  console.log(data);
+  useEffect(() => {
+    const MPS_SUBSCRIPTION_URL = "http://localhost:1337/api/mps-subscriptions";
+    fetch(MPS_SUBSCRIPTION_URL)
+      .then((res) => res.json())
+      .then((res) => {
+        setIsLoading(false);
+        let covData = [];
+        res.data.forEach((i) => {
+          covData.push({
+            key: i.id,
+            subscriptionname: i.attributes.topicName,
+            id: i.id,
+            apmid: i.attributes.apmId,
+            adgroup: i.attributes.adGroup,
+            endpointurl: i.attributes.endpoint,
+            topic: i.attributes.topicName,
+            slackchannel: i.attributes.channelName,
+          });
+        });
+        setData(covData);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   return (
     <ConfigProvider
@@ -310,7 +316,7 @@ const SubscriptionsProxy = () => {
           // onChange={onChange}
         />
         <ComponentsTable columns={columns} data={data} />
-        <ComponentsPagination defaultPageSize={10} total={10} />
+        <ComponentsPagination defaultPageSize={10} total={data.length} />
       </ComponentsContent>
     </ConfigProvider>
   );
