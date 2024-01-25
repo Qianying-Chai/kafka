@@ -1,7 +1,6 @@
 import React from "react";
 import ComponentsTable from "../Components/ComponentsTable";
 import ComponentsInput from "../Components/ComponentsInput";
-import ComponentsPagination from "../Components/ComponentsPagination";
 import categoryConstants from "../common/categoryConstants";
 import ComponentsTitle from "../Components/ComponentsTitle";
 import ComponentsBreadcrumb from "../Components/ComponentsBreadcrumb";

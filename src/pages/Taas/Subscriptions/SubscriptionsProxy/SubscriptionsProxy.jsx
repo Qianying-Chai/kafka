@@ -2,11 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsTable from "../../../Components/ComponentsTable";
-import ComponentsPagination from "../../../Components/ComponentsPagination";
 import categoryConstants from "../../../common/categoryConstants";
 import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
-
+import ComponentsSpin from "../../../Components/ComponentSpin";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Tabs, ConfigProvider, Space } from "antd";
 import Highlighter from "react-highlight-words";
@@ -15,6 +14,18 @@ import { SearchOutlined, MoreOutlined } from "@ant-design/icons";
 import { Input } from "antd";
 
 const SubscriptionsProxy = () => {
+  const breadcrumb = [
+    {
+      title: "Home",
+    },
+    {
+      title: "Kafka",
+    },
+    {
+      title: categoryConstants.SUBSCRIPTIONS,
+    },
+  ];
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -163,7 +174,6 @@ const SubscriptionsProxy = () => {
       width: "13%",
       ...getColumnSearchProps("Subscription Name"),
       sorter: (a, b) => a.subscriptionname.length - b.subscriptionname.length,
-      sortDirections: ["descend", "ascend"],
       render: (_, record) => <a>{record.subscriptionname}</a>,
     },
     {
@@ -173,7 +183,6 @@ const SubscriptionsProxy = () => {
       width: "13%",
       ...getColumnSearchProps("APM Id"),
       sorter: (a, b) => a.apmid.length - b.apmid.length,
-      sortDirections: ["descend", "ascend"],
       render: (_, record) => <a>{record.apmid}</a>,
     },
     {
@@ -224,7 +233,7 @@ const SubscriptionsProxy = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
-  console.log(data);
+
   useEffect(() => {
     const MPS_SUBSCRIPTION_URL = "http://localhost:1337/api/mps-subscriptions";
     fetch(MPS_SUBSCRIPTION_URL)
@@ -235,7 +244,7 @@ const SubscriptionsProxy = () => {
         res.data.forEach((i) => {
           covData.push({
             key: i.id,
-            subscriptionname: i.attributes.topicName,
+            subscriptionname: i.attributes.mpsAppName,
             id: i.id,
             apmid: i.attributes.apmId,
             adgroup: i.attributes.adGroup,
@@ -278,19 +287,7 @@ const SubscriptionsProxy = () => {
       }}
     >
       <div>
-        <ComponentsBreadcrumb
-          items={[
-            {
-              title: "Home",
-            },
-            {
-              title: "Kafka",
-            },
-            {
-              title: categoryConstants.SUBSCRIPTIONS,
-            },
-          ]}
-        />
+        <ComponentsBreadcrumb items={breadcrumb} />
         <div className="content-banner">
           <ComponentsTitle title={categoryConstants.SUBSCRIPTIONS} />
           <Button
@@ -315,8 +312,21 @@ const SubscriptionsProxy = () => {
           items={items}
           // onChange={onChange}
         />
-        <ComponentsTable columns={columns} data={data} />
-        <ComponentsPagination defaultPageSize={10} total={data.length} />
+        {isLoading ? (
+          <ComponentsSpin />
+        ) : (
+          <ComponentsTable
+            columns={columns}
+            data={data}
+            pagination={{
+              // showSizeChanger: true,
+              total: data.length,
+              defaultPageSize: 10,
+              // size: "small",
+            }}
+          />
+        )}
+        {/* <ComponentsPagination defaultPageSize={10} total={data.length} /> */}
       </ComponentsContent>
     </ConfigProvider>
   );

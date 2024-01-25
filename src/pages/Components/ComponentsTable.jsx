@@ -16,7 +16,7 @@ const ComponentsTable = (props) => {
         style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
         columns={props.columns}
         dataSource={props.data}
-        // pagination={false}
+        pagination={props.pagination}
       />
     </ConfigProvider>
   );

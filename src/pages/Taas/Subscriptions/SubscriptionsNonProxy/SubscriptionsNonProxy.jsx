@@ -3,15 +3,13 @@ import { Link } from "react-router-dom";
 import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsInput from "../../../Components/ComponentsInput";
 import ComponentsTable from "../../../Components/ComponentsTable";
-import ComponentsPagination from "../../../Components/ComponentsPagination";
+import ComponentsSpin from "../../../Components/ComponentSpin";
 import categoryConstants from "../../../common/categoryConstants";
 import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
-import { setTaasSubNonProxyData } from "../../../../redux/reducer";
-import { useDispatch, useSelector } from "react-redux";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Tabs, ConfigProvider, Space, Tag } from "antd";
-import { Alert, Flex, Spin } from "antd";
+import { Button, Tabs, ConfigProvider } from "antd";
+
 import {
   TableOutlined,
   CheckCircleFilled,
@@ -140,8 +138,6 @@ const SubscriptionsNonProxy = () => {
   const [isloading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
 
-  // const dispatch = useDispatch();
-
   useEffect(() => {
     const url = "http://localhost:1337/api/subscriptions";
     fetch(url)
@@ -226,9 +222,7 @@ const SubscriptionsNonProxy = () => {
           items={items}
         />
         {isloading ? (
-          <Spin size="large">
-            <div className="content" />
-          </Spin>
+          <ComponentsSpin />
         ) : (
           <>
             <ComponentsInput
@@ -236,10 +230,19 @@ const SubscriptionsNonProxy = () => {
                 "Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email, Permission, Auto-Approved, and Status"
               }
             />
-            <ComponentsTable columns={columns} data={data} />
+            <ComponentsTable
+              columns={columns}
+              data={data}
+              pagination={{
+                showSizeChanger: true,
+                total: data.length,
+                defaultPageSize: 10,
+                // size: "small",
+              }}
+            />
           </>
         )}
-        <ComponentsPagination defaultPageSize={10} total={data.length} />
+        {/* <ComponentsPagination defaultPageSize={10} total={data.length} /> */}
       </ComponentsContent>
     </ConfigProvider>
   );

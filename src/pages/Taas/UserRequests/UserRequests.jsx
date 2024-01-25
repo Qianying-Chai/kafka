@@ -2,7 +2,6 @@ import React from "react";
 import ComponentsContent from "../../Components/ComponentsContent";
 import ComponentsTable from "../../Components/ComponentsTable";
 import ComponentsInput from "../../Components/ComponentsInput";
-import ComponentsPagination from "../../Components/ComponentsPagination";
 import categoryConstants from "../../common/categoryConstants";
 import ComponentsTitle from "../../Components/ComponentsTitle";
 import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
@@ -150,7 +149,7 @@ const UserRequests = () => {
           }
         />
         <ComponentsTable columns={columns} data={data} />
-        <ComponentsPagination defaultPageSize={25} total={25} />
+        {/* <ComponentsPagination defaultPageSize={25} total={25} /> */}
       </ComponentsContent>
     </>
   );

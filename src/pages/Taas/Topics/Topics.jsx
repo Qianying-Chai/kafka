@@ -1,7 +1,6 @@
 import React from "react";
 import ComponentsTable from "../../Components/ComponentsTable";
 import ComponentsInput from "../../Components/ComponentsInput";
-import ComponentsPagination from "../../Components/ComponentsPagination";
 import categoryConstants from "../../common/categoryConstants";
 import ComponentsContent from "../../Components/ComponentsContent";
 import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
@@ -156,7 +155,7 @@ const CreateTopics = () => {
           }
         />
         <ComponentsTable columns={columns} data={data} />
-        <ComponentsPagination showQuickJumper defaultPageSize={25} total={25} />
+        {/* <ComponentsPagination showQuickJumper defaultPageSize={25} total={25} /> */}
       </ComponentsContent>
     </>
   );

@@ -2,7 +2,7 @@ import React from "react";
 
 import ComponentsInput from "../../Components/ComponentsInput";
 import ComponentsTable from "../../Components/ComponentsTable";
-import ComponentsPagination from "../../Components/ComponentsPagination";
+
 import ComponentsContent from "../../Components/ComponentsContent";
 import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../Components/ComponentsTitle";
@@ -197,7 +197,7 @@ const SubscriptionApprovals = () => {
           <ComponentsInput placeholder="Search by Id, Topic Name, APM ID, Application Name, AD Group, DL Notfication Email,_ _operationType, Auto-Approved, and Status" />
         </div>
         <ComponentsTable columns={columns} data={data} />
-        <ComponentsPagination defaultPageSize={10} total={10} />
+        {/* <ComponentsPagination defaultPageSize={10} total={10} /> */}
       </ComponentsContent>
     </ConfigProvider>
   );
