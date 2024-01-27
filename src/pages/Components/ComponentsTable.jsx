@@ -10,6 +10,9 @@ const ComponentsTable = (props) => {
             headerColor: "#041F41",
           },
         },
+        token: {
+          colorLink: "#0751A9",
+        },
       }}
     >
       <Table

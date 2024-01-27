@@ -1,0 +1,11 @@
+.ant-popover-inner-content {
+  padding: 12px 16px;
+  min-width: 130px;
+}
+.ant-popover-inner {
+  border-radius: 0px !important;
+}
+
+.ant-popover-content p {
+  margin: 10px 0;
+}

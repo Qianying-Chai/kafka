@@ -1,6 +1,7 @@
 import { SearchOutlined } from "@ant-design/icons";
 import React, { useRef, useState, useEffect } from "react";
 import Highlighter from "react-highlight-words";
+import "../Style/Subscription.css";
 import ComponentsTable from "../../Components/ComponentsTable";
 import categoryConstants from "../../common/categoryConstants";
 import ComponentsTitle from "../../Components/ComponentsTitle";
@@ -9,8 +10,16 @@ import ComponentsSpin from "../../Components/ComponentSpin";
 import { PlusOutlined, MoreOutlined } from "@ant-design/icons";
 import ComponentsContent from "../../Components/ComponentsContent";
 import { Link } from "react-router-dom";
-import { Button, Input, ConfigProvider, Popover } from "antd";
-
+import {
+  Button,
+  Input,
+  ConfigProvider,
+  Popover,
+  Modal,
+  Select,
+  Space,
+} from "antd";
+const { confirm } = Modal;
 const Subscription = () => {
   const breadcrumb = [
     {
@@ -27,6 +36,34 @@ const Subscription = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+
+  useEffect(() => {
+    const CULSTER_SUBSCRIPTION_URL =
+      "http://localhost:1337/api/cluster-subscriptions";
+    fetch(CULSTER_SUBSCRIPTION_URL)
+      .then((res) => res.json())
+      .then((res) => {
+        setIsLoading(false);
+        const covData = [];
+        res.data.forEach((i) =>
+          covData.push({
+            key: i.id,
+            subscriptionname: i.attributes.mpsAppName,
+            id: i.id,
+            apmid: i.attributes.apmId,
+            adgroup: i.attributes.adGroup,
+            endpointurl: i.attributes.endpoint,
+            topic: i.attributes.topicName,
+            slackchannel: i.attributes.channelName,
+            cluster: i.attributes.clusterName,
+            regions: i.attributes.regions,
+          })
+        );
+        setData(covData);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -88,23 +125,55 @@ const Subscription = () => {
       ),
   });
 
-  // const [open, setOpen] = useState({});
-
-  // const hide = () => {
-  //   setOpen(false);
-  // };
-
-  // const handleOpenChange = (newOpen, id) => {
-  //   setOpen({ [id]: newOpen });
-  //   console.log(1111, open, 222, open[id]);
-  // };
-
   const [open, setOpen] = useState({});
-  const hide = () => {
-    setOpen(false);
-  };
+
   const handleOpenChange = (newOpen, id) => {
     setOpen({ [id]: newOpen });
+  };
+
+  const START_PROXY = "START_PROXY";
+
+  const handleExecution = (type, record) => {
+    let regions = record.regions;
+    console.log(regions);
+    switch (type) {
+      case START_PROXY:
+        confirm({
+          icon: null,
+          title: `Subscription Name : ${record.subscriptionname}`,
+          content: (
+            <div>
+              <p>Do you want to start proxy connection?</p>
+              <div>
+                <span>Select Region:</span>{" "}
+                <Select
+                  defaultValue="Wus"
+                  // style={{
+                  //   width: 120,
+                  // }}
+                  options={[
+                    {
+                      value: "lucy",
+                      label: "Lucy",
+                    },
+                  ]}
+                />
+              </div>
+            </div>
+          ),
+
+          footer: (_, { OkBtn, CancelBtn }) => (
+            <>
+              <Button>Custom Button</Button>
+              <CancelBtn />
+              <OkBtn />
+            </>
+          ),
+        });
+        break;
+      default:
+        return null;
+    }
   };
 
   const columns = [
@@ -174,22 +243,36 @@ const Subscription = () => {
       dataIndex: "Action",
       key: "Action",
       width: "5%",
-      //   render: (_, record) => (
-      //     <Popover
-      //       content={<a onClick={hide}>Close</a>}
-      //       title="Title"
-      //       trigger="click"
-      //       open={open.id}
-      //       onOpenChange={(newOpen) => handleOpenChange(newOpen, record.id)}
-      //     >
-      //       <MoreOutlined />
-      //     </Popover>
-      //   ),
-
       render: (_, record) => (
         <Popover
-          content={<a onClick={hide}>Close</a>}
-          title="Title"
+          style={{
+            borderRadius: "0px",
+          }}
+          content={
+            <>
+              <p
+                onClick={() => {
+                  console.log(record);
+                  handleExecution(START_PROXY, record);
+                }}
+              >
+                {" "}
+                <a>Start Proxy</a>
+              </p>
+              <p>
+                {" "}
+                <a>Stop Proxy</a>
+              </p>
+              <p>
+                {" "}
+                <a>Delete Subscription</a>
+              </p>
+              <p>
+                {" "}
+                <a>Offset Reset</a>
+              </p>
+            </>
+          }
           trigger="click"
           open={open[record.id]}
           onOpenChange={(newOpen) => {
@@ -205,31 +288,6 @@ const Subscription = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const CULSTER_SUBSCRIPTION_URL =
-      "http://localhost:1337/api/cluster-subscriptions";
-    fetch(CULSTER_SUBSCRIPTION_URL)
-      .then((res) => res.json())
-      .then((res) => {
-        setIsLoading(false);
-        const covData = [];
-        res.data.forEach((i) =>
-          covData.push({
-            key: i.id,
-            subscriptionname: i.attributes.mpsAppName,
-            id: i.id,
-            apmid: i.attributes.apmId,
-            adgroup: i.attributes.adGroup,
-            endpointurl: i.attributes.endpoint,
-            topic: i.attributes.topicName,
-            slackchannel: i.attributes.channelName,
-            cluster: i.attributes.clusterName,
-          })
-        );
-        setData(covData);
-      })
-      .catch((error) => console.log(error));
-  }, []);
   return (
     <ConfigProvider
       theme={{
@@ -237,9 +295,6 @@ const Subscription = () => {
           Table: {
             headerBg: "#ffffff",
           },
-        },
-        token: {
-          colorLink: "#0751A9",
         },
       }}
     >
