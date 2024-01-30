@@ -1,6 +1,6 @@
 import { ConfigProvider, Table } from "antd";
 
-const ComponentsTable = (props) => {
+const ComponentsTable = ({ columns, data, pagination, onChange }) => {
   return (
     <ConfigProvider
       theme={{
@@ -17,9 +17,10 @@ const ComponentsTable = (props) => {
     >
       <Table
         style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
-        columns={props.columns}
-        dataSource={props.data}
-        pagination={props.pagination}
+        columns={columns}
+        dataSource={data}
+        pagination={pagination}
+        onChange={onChange}
       />
     </ConfigProvider>
   );

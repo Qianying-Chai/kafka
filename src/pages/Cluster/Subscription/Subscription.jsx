@@ -2,13 +2,14 @@ import { SearchOutlined } from "@ant-design/icons";
 import React, { useRef, useState, useEffect } from "react";
 import Highlighter from "react-highlight-words";
 import "../Style/Subscription.css";
-import ComponentsTable from "../../Components/ComponentsTable";
 import categoryConstants from "../../common/categoryConstants";
 import ComponentsTitle from "../../Components/ComponentsTitle";
 import ComponentsBreadcrumb from "../../Components/ComponentsBreadcrumb";
 import ComponentsSpin from "../../Components/ComponentSpin";
 import { PlusOutlined, MoreOutlined } from "@ant-design/icons";
 import ComponentsContent from "../../Components/ComponentsContent";
+import { setPagination } from "../../../redux/reducer";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -17,9 +18,10 @@ import {
   Popover,
   Modal,
   Select,
-  Space,
+  Table,
 } from "antd";
 const { confirm } = Modal;
+
 const Subscription = () => {
   const breadcrumb = [
     {
@@ -37,15 +39,28 @@ const Subscription = () => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
 
-  useEffect(() => {
-    const CULSTER_SUBSCRIPTION_URL =
-      "http://localhost:1337/api/cluster-subscriptions";
-    fetch(CULSTER_SUBSCRIPTION_URL)
+  const dispatch = useDispatch();
+  const pagination = useSelector((state) => state.pagination);
+  const { pageSize, page, total } = pagination;
+
+  const handleChangePagination = (page) => {
+    dispatch(
+      setPagination({
+        ...pagination,
+        pageSize: page.pageSize,
+        page: page.current,
+      })
+    );
+  };
+
+  const handleGetData = () => {
+    const url = `http://localhost:1337/api/cluster-subscriptions?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+    fetch(url)
       .then((res) => res.json())
       .then((res) => {
         setIsLoading(false);
         const covData = [];
-        res.data.forEach((i) =>
+        res.data.forEach((i) => {
           covData.push({
             key: i.id,
             subscriptionname: i.attributes.mpsAppName,
@@ -57,12 +72,23 @@ const Subscription = () => {
             slackchannel: i.attributes.channelName,
             cluster: i.attributes.clusterName,
             regions: i.attributes.regions,
+          });
+        });
+        setData(covData);
+
+        dispatch(
+          setPagination({
+            ...pagination,
+            total: res.meta.pagination.total,
           })
         );
-        setData(covData);
       })
       .catch((error) => console.log(error));
-  }, []);
+  };
+
+  useEffect(() => {
+    handleGetData();
+  }, [pageSize, page]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -131,43 +157,104 @@ const Subscription = () => {
     setOpen({ [id]: newOpen });
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+
   const START_PROXY = "START_PROXY";
 
   const handleExecution = (type, record) => {
-    let regions = record.regions;
-    console.log(regions);
+    let regions = record.regions.split(",");
+
+    const options = regions.map((item) => {
+      return {
+        value: item,
+        label: item,
+      };
+    });
+
+    let selectedRegion = regions[0];
+
     switch (type) {
       case START_PROXY:
         confirm({
           icon: null,
           title: `Subscription Name : ${record.subscriptionname}`,
+          onOk() {
+            setModalOpen(false);
+          },
+          onCancel() {
+            setModalOpen(false);
+          },
           content: (
             <div>
               <p>Do you want to start proxy connection?</p>
               <div>
                 <span>Select Region:</span>{" "}
-                <Select
-                  defaultValue="Wus"
-                  // style={{
-                  //   width: 120,
-                  // }}
-                  options={[
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                  ]}
-                />
+                {regions.length > 1 ? (
+                  <Select
+                    defaultValue={selectedRegion}
+                    style={{
+                      width: 160,
+                      marginLeft: "5px",
+                    }}
+                    options={options}
+                  />
+                ) : (
+                  <span>{regions}</span>
+                )}
               </div>
             </div>
           ),
 
           footer: (_, { OkBtn, CancelBtn }) => (
-            <>
-              <Button>Custom Button</Button>
-              <CancelBtn />
-              <OkBtn />
-            </>
+            // console.log(OkBtn, CancelBtn),
+            // <>
+            //   <CancelBtn shape="round" className="cancel-button" />
+            //   <OkBtn
+            //     type="primary"
+            //     shape="round"
+            //     className="submit-button primary-submit-button "
+            //   />
+            // </>
+            // <div className="create-buttons-wrapper">
+            //   <Button
+            //     shape="round"
+            //     className="cancel-button"
+            //     onClick={handleCancel}
+            //   >
+            //     CANCEL
+            //   </Button>
+            //   <Button
+            //     type="primary"
+            //     shape="round"
+            //     className="submit-button primary-submit-button "
+            //     onClick={handleOk}
+            //   >
+            //     SUBMIT
+            //   </Button>
+            // </div>
+            // ), (
+            <div className="create-buttons-wrapper">
+              <Button
+                shape="round"
+                className="cancel-button"
+                onOk
+                // onCancel={() => {
+                //   console.log(222);
+                //   setModalOpen(false);
+                // }}
+              >
+                CANCEL
+              </Button>
+              <Button
+                type="primary"
+                shape="round"
+                className="submit-button primary-submit-button "
+                // onClick={handleOk}
+                // onOK={false}
+              >
+                SUBMIT
+              </Button>
+            </div>
           ),
         });
         break;
@@ -245,14 +332,10 @@ const Subscription = () => {
       width: "5%",
       render: (_, record) => (
         <Popover
-          style={{
-            borderRadius: "0px",
-          }}
           content={
             <>
               <p
                 onClick={() => {
-                  console.log(record);
                   handleExecution(START_PROXY, record);
                 }}
               >
@@ -294,7 +377,12 @@ const Subscription = () => {
         components: {
           Table: {
             headerBg: "#ffffff",
+            headerColor: "#041F41",
           },
+        },
+        token: {
+          borderRadius: 0,
+          colorLink: "#0751A9",
         },
       }}
     >
@@ -318,16 +406,18 @@ const Subscription = () => {
         {isLoading ? (
           <ComponentsSpin />
         ) : (
-          <ComponentsTable
+          <Table
+            style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
             columns={columns}
-            data={data}
+            dataSource={data}
             pagination={{
               showSizeChanger: true,
               showQuickJumper: true,
-              total: data.length,
-              defaultPageSize: 10,
+              total: total,
+
               // size: "small",
             }}
+            onChange={handleChangePagination}
           />
         )}
       </ComponentsContent>
