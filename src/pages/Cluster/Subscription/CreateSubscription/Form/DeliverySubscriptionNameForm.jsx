@@ -4,17 +4,14 @@ import { Col, Row, Divider, Input, Select, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
 const DeliverySubscriptionNameForm = () => {
-  // const [items, setItems] = useState(["jack", "lucy"]);
   const [name, setName] = useState("");
   const inputRef = useRef(null);
   const onNameChange = (event) => {
     setName(event.target.value);
   };
 
-  // let index = 0;
   const addItem = (e) => {
     e.preventDefault();
-    // setItems([...items, name || `New item ${index++}`]);
     setName("");
     setTimeout(() => {
       inputRef.current?.focus();

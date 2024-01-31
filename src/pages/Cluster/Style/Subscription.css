@@ -9,3 +9,30 @@
 .ant-popover-content p {
   margin: 10px 0;
 }
+
+.modal-title,
+.modal-content {
+  color: #000000d9;
+}
+
+.modal-title {
+  font-weight: normal;
+}
+
+.modal-cancel-btn,
+.modal-ok-btn {
+  letter-spacing: 1pt;
+  padding: 4px 15px;
+  width: 135px;
+  height: 32px;
+  border-radius: 32px;
+  margin-top: 12px;
+}
+
+.modal-ok-btn {
+  background-color: #041f41;
+}
+
+.modal-radio-group {
+  margin: 10px 0;
+}

@@ -1,5 +1,5 @@
-import { SearchOutlined } from "@ant-design/icons";
 import React, { useRef, useState, useEffect } from "react";
+import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import "../Style/Subscription.css";
 import categoryConstants from "../../common/categoryConstants";
@@ -11,6 +11,7 @@ import ComponentsContent from "../../Components/ComponentsContent";
 import { setPagination } from "../../../redux/reducer";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { AppContext } from "./AppContext";
 import {
   Button,
   Input,
@@ -19,8 +20,8 @@ import {
   Modal,
   Select,
   Table,
+  Radio,
 } from "antd";
-const { confirm } = Modal;
 
 const Subscription = () => {
   const breadcrumb = [
@@ -35,9 +36,14 @@ const Subscription = () => {
     },
   ];
 
+  const [modal, contextHolder] = Modal.useModal();
+  const { confirm } = modal;
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const [open, setOpen] = useState({});
+  const [radioValue, setRadioValue] = useState(1);
 
   const dispatch = useDispatch();
   const pagination = useSelector((state) => state.pagination);
@@ -151,18 +157,32 @@ const Subscription = () => {
       ),
   });
 
-  const [open, setOpen] = useState({});
-
   const handleOpenChange = (newOpen, id) => {
     setOpen({ [id]: newOpen });
   };
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const hide = () => {
+    setOpen(false);
+  };
 
-  const START_PROXY = "START_PROXY";
+  const START_STOP = "START_STOP";
+  const DELETE = "DELETE";
+  const OFFSET_RESET = "OFFSET_RESET";
 
-  const handleExecution = (type, record) => {
+  const onRadioChange = (e) => {
+    setRadioValue(e.target.value);
+  };
+
+  const handleExecution = (type, state, record) => {
+    const modalStyles = {
+      content: {
+        padding: "32px 32px 24px",
+        borderRadius: 0,
+      },
+    };
+
     let regions = record.regions.split(",");
+    let selectedRegion = regions[0];
 
     const options = regions.map((item) => {
       return {
@@ -171,25 +191,21 @@ const Subscription = () => {
       };
     });
 
-    let selectedRegion = regions[0];
-
     switch (type) {
-      case START_PROXY:
+      case START_STOP:
         confirm({
           icon: null,
-          title: `Subscription Name : ${record.subscriptionname}`,
-          onOk() {
-            setModalOpen(false);
-          },
-          onCancel() {
-            setModalOpen(false);
-          },
+          title: (
+            <div className="modal-title">{`Subscription Name : ${record.subscriptionname}`}</div>
+          ),
           content: (
-            <div>
-              <p>Do you want to start proxy connection?</p>
-              <div>
-                <span>Select Region:</span>{" "}
-                {regions.length > 1 ? (
+            <div className="modal-content">
+              <p>{`Do you want to ${
+                state === "start" ? "start" : "stop"
+              } proxy connection?`}</p>
+              {regions.length > 1 ? (
+                <div>
+                  <span>Select Region:</span>{" "}
                   <Select
                     defaultValue={selectedRegion}
                     style={{
@@ -198,66 +214,89 @@ const Subscription = () => {
                     }}
                     options={options}
                   />
-                ) : (
-                  <span>{regions}</span>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div>Region: {regions}</div>
+              )}
             </div>
           ),
-
-          footer: (_, { OkBtn, CancelBtn }) => (
-            // console.log(OkBtn, CancelBtn),
-            // <>
-            //   <CancelBtn shape="round" className="cancel-button" />
-            //   <OkBtn
-            //     type="primary"
-            //     shape="round"
-            //     className="submit-button primary-submit-button "
-            //   />
-            // </>
-            // <div className="create-buttons-wrapper">
-            //   <Button
-            //     shape="round"
-            //     className="cancel-button"
-            //     onClick={handleCancel}
-            //   >
-            //     CANCEL
-            //   </Button>
-            //   <Button
-            //     type="primary"
-            //     shape="round"
-            //     className="submit-button primary-submit-button "
-            //     onClick={handleOk}
-            //   >
-            //     SUBMIT
-            //   </Button>
-            // </div>
-            // ), (
-            <div className="create-buttons-wrapper">
-              <Button
-                shape="round"
-                className="cancel-button"
-                onOk
-                // onCancel={() => {
-                //   console.log(222);
-                //   setModalOpen(false);
-                // }}
-              >
-                CANCEL
-              </Button>
-              <Button
-                type="primary"
-                shape="round"
-                className="submit-button primary-submit-button "
-                // onClick={handleOk}
-                // onOK={false}
-              >
-                SUBMIT
-              </Button>
-            </div>
-          ),
+          styles: modalStyles,
+          okText: "START",
+          cancelText: "CANCEL",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          cancelButtonProps: {
+            className: "modal-cancel-btn",
+          },
         });
         break;
+      case DELETE:
+        confirm({
+          icon: null,
+          title: (
+            <div className="modal-title">{`Subscription Name : ${record.subscriptionname}`}</div>
+          ),
+          content: (
+            <div className="modal-content">
+              Do you want to delete subscription?
+            </div>
+          ),
+          styles: modalStyles,
+          okText: "DELETE",
+          cancelText: "CANCEL",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          cancelButtonProps: {
+            className: "modal-cancel-btn",
+          },
+        });
+        break;
+      case OFFSET_RESET:
+        confirm({
+          icon: null,
+          title: (
+            <div className="modal-title">{`Subscription Name : ${record.subscriptionname}`}</div>
+          ),
+          content: (
+            <AppContext.Consumer>
+              {(value) => (
+                <div className="modal-content">
+                  <div>
+                    please select offset action to subscription{" "}
+                    {record.subscriptionname}?
+                  </div>
+                  <Radio.Group
+                    value={value.radioValue}
+                    onChange={(e) => {
+                      onRadioChange(e);
+                    }}
+                    className="modal-radio-group"
+                  >
+                    <Radio value={1}>Earliest</Radio>
+                    <Radio value={2}>Latest</Radio>
+                    <Radio value={3}>To Timestamp</Radio>
+                    <Radio value={4}>Copy Offsets</Radio>
+                  </Radio.Group>
+                  {console.log(value.radioValue)}
+                </div>
+              )}
+            </AppContext.Consumer>
+          ),
+          styles: modalStyles,
+          width: 600,
+          okText: "DELETE",
+          cancelText: "CANCEL",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          cancelButtonProps: {
+            className: "modal-cancel-btn",
+          },
+        });
+        break;
+
       default:
         return null;
     }
@@ -336,21 +375,37 @@ const Subscription = () => {
             <>
               <p
                 onClick={() => {
-                  handleExecution(START_PROXY, record);
+                  handleExecution(START_STOP, "start", record);
+                  hide();
                 }}
               >
                 {" "}
                 <a>Start Proxy</a>
               </p>
-              <p>
+              <p
+                onClick={() => {
+                  handleExecution(START_STOP, "stop", record);
+                  hide();
+                }}
+              >
                 {" "}
                 <a>Stop Proxy</a>
               </p>
-              <p>
+              <p
+                onClick={() => {
+                  handleExecution(DELETE, _, record);
+                  hide();
+                }}
+              >
                 {" "}
                 <a>Delete Subscription</a>
               </p>
-              <p>
+              <p
+                onClick={() => {
+                  handleExecution(OFFSET_RESET, _, record);
+                  hide();
+                }}
+              >
                 {" "}
                 <a>Offset Reset</a>
               </p>
@@ -372,56 +427,60 @@ const Subscription = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Table: {
-            headerBg: "#ffffff",
-            headerColor: "#041F41",
+    <AppContext.Provider value={{ radioValue: radioValue }}>
+      <ConfigProvider
+        theme={{
+          components: {
+            Table: {
+              headerBg: "#ffffff",
+              headerColor: "#041F41",
+            },
+            Radio: {},
           },
-        },
-        token: {
-          borderRadius: 0,
-          colorLink: "#0751A9",
-        },
-      }}
-    >
-      <div>
-        <ComponentsBreadcrumb items={breadcrumb} />
-        <div className="content-banner">
-          <ComponentsTitle title={categoryConstants.SUBSCRIPTION} />
-          <Button
-            shape="round"
-            className="content-banner-button"
-            type="primary"
-          >
-            <Link to={`/kafka/mps-clusters-subscriptions/create`}>
-              <PlusOutlined style={{ marginRight: "8px" }} />
-              {categoryConstants.CREATE_SUBSCRIPTION.toUpperCase()}
-            </Link>
-          </Button>
+          token: {
+            borderRadius: 0,
+            colorLink: "#0751A9",
+          },
+        }}
+      >
+        <div>
+          <ComponentsBreadcrumb items={breadcrumb} />
+          <div className="content-banner">
+            <ComponentsTitle title={categoryConstants.SUBSCRIPTION} />
+            <Button
+              shape="round"
+              className="content-banner-button"
+              type="primary"
+            >
+              <Link to={`/kafka/mps-clusters-subscriptions/create`}>
+                <PlusOutlined style={{ marginRight: "8px" }} />
+                {categoryConstants.CREATE_SUBSCRIPTION.toUpperCase()}
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
-      <ComponentsContent>
-        {isLoading ? (
-          <ComponentsSpin />
-        ) : (
-          <Table
-            style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
-            columns={columns}
-            dataSource={data}
-            pagination={{
-              showSizeChanger: true,
-              showQuickJumper: true,
-              total: total,
+        <ComponentsContent>
+          {isLoading ? (
+            <ComponentsSpin />
+          ) : (
+            <Table
+              style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
+              columns={columns}
+              dataSource={data}
+              pagination={{
+                showSizeChanger: true,
+                showQuickJumper: true,
+                total: total,
 
-              // size: "small",
-            }}
-            onChange={handleChangePagination}
-          />
-        )}
-      </ComponentsContent>
-    </ConfigProvider>
+                // size: "small",
+              }}
+              onChange={handleChangePagination}
+            />
+          )}
+        </ComponentsContent>
+      </ConfigProvider>
+      {contextHolder}
+    </AppContext.Provider>
   );
 };
 export default Subscription;
