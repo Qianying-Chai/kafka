@@ -15,6 +15,10 @@
   color: #000000d9;
 }
 
+.modal-content {
+  margin-right: -30px;
+}
+
 .modal-title {
   font-weight: normal;
 }
@@ -33,6 +37,14 @@
   background-color: #041f41;
 }
 
-.modal-radio-group {
+.modal-radio-group,
+.modal-select-wrapper {
   margin: 10px 0;
+}
+
+.modal-select-prefix {
+  margin-right: 10px;
+}
+.radioReminder {
+  color: #ff0000;
 }
