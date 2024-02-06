@@ -181,6 +181,7 @@ const SubscriptionContentTable = () => {
 
     const handleDeleteData = (id) => {
       const url = `http://localhost:1337/api/cluster-subscriptions/${id}`;
+      console.log(222, url);
       fetch(url, {
         method: "DELETE",
       })
@@ -194,7 +195,6 @@ const SubscriptionContentTable = () => {
             },
             styles: modalStyles,
           });
-          handleGetData();
         })
         .catch((error) => {
           console.log(444, error);
