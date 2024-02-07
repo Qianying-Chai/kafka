@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../Style/Subscription.css";
+import { apiEndpoint, getEndpoint } from "../../Taas/Configure";
 import ComponentsSpin from "../../Components/ComponentSpin";
-
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { MoreOutlined } from "@ant-design/icons";
@@ -156,6 +156,7 @@ const SubscriptionContentTable = () => {
   const OFFSET_RESET = "OFFSET_RESET";
 
   const handleExecution = (type, state, record) => {
+    console.log(record);
     let regions = record.regions.split(",");
     let selectedRegion = regions[0];
     let timestamp = "";
@@ -263,6 +264,41 @@ const SubscriptionContentTable = () => {
             className: "modal-cancel-btn",
           },
           onOk() {
+            // getEndpoint(
+            //   apiEndpoint.MPS.SUPSCRIPTION_PROXY_ACTION,
+            //   record.subscriptionname
+            // )
+
+            const data = { attributes: { start: "post" } };
+
+            console.log(111111111111111, JSON.stringify({ data: data }));
+
+            fetch(`http://localhost:1337/api/start-test1s`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ data: data }),
+            })
+              .then((res) => {
+                return res.json();
+              })
+              .then((data) => console.log(data))
+              .catch((error) => {
+                console.log(22, error);
+              });
+            // const axios = require("axios");
+            // axios({
+            //   method: "POST",
+            //   url: `/api/${data.subscriptionname}s`,
+            //   data: data,
+            // })
+            // .then((res) => {
+            //   console.log(111, res);
+            // })
+            // .catch((error) => {
+            //   console.log(22, error);
+            // });
             modal.error({
               title: "ERROR",
               content: "Something went wrong. Please try again later.",
