@@ -28,8 +28,11 @@ const SubscriptionContentTable = () => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const [open, setOpen] = useState({});
+
   const [modalRadioValue, setModalRadioValue] = useState("Earliest");
+  const [offsetResetInputValue, setOffsetResetInputValue] = useState("");
   const [copyOffsetsRadioValue, setCopyOffsetsRadioValue] = useState("Migrate");
+  const [selectedRegionValue, setSelectedRegionValue] = useState("");
 
   const dispatch = useDispatch();
   const pagination = useSelector((state) => state.pagination);
@@ -151,64 +154,27 @@ const SubscriptionContentTable = () => {
     setOpen(false);
   };
 
-  const START_STOP = "START_STOP";
+  const START = "START";
+  const STOP = "STOP";
   const DELETE = "DELETE";
   const OFFSET_RESET = "OFFSET_RESET";
 
-  const handleExecution = (type, state, record) => {
-    console.log(record);
-    let regions = record.regions.split(",");
+  const handleExecution = (type, record) => {
+    let regions = Object.keys(record.regions);
     let selectedRegion = regions[0];
-    let timestamp = "";
+    let selectedTimeStamp = "";
+    let inputConsumerGroup = "";
+    let selectedOffsetType = "Earliest";
+    let checkCopyToMaps = "Migrate";
+
+    setSelectedRegionValue(selectedRegion);
+
     const options = regions.map((item) => {
       return {
         value: item,
         label: item,
       };
     });
-
-    const onModalRadioChange = (e) => {
-      setModalRadioValue(e.target.value);
-    };
-
-    const onCopyOffsetsRadioChange = (e) => {
-      setCopyOffsetsRadioValue(e.target.value);
-    };
-
-    const onDateChange = (date, dateString) => {
-      console.log(date, dateString);
-      timestamp = dateString;
-    };
-
-    const handleDeleteData = (id) => {
-      const url = `http://localhost:1337/api/cluster-subscriptions/${id}`;
-      fetch(url, {
-        method: "DELETE",
-      })
-        .then((res) => {
-          console.log(333, res);
-          modal.success({
-            title: "SUCCESS",
-            content: "Subscription Deleted Successfully !",
-            okButtonProps: {
-              className: "modal-ok-btn",
-            },
-            styles: modalStyles,
-          });
-          handleGetData();
-        })
-        .catch((error) => {
-          console.log(444, error);
-          modal.error({
-            title: "ERROR",
-            content: "Something went wrong. Please try again later.",
-            okButtonProps: {
-              className: "modal-ok-btn",
-            },
-            styles: modalStyles,
-          });
-        });
-    };
 
     const modalStyles = {
       content: {
@@ -217,8 +183,17 @@ const SubscriptionContentTable = () => {
       },
     };
 
+    // const handleStateChanges = (radioValue, offsetRadio) => {
+    //   setModalRadioValue("Earliest");
+    //   setCopyOffsetsRadioValue("Migrate");
+    //   setOffsetResetInputValue("");
+    //   setSelectedRegionValue("");
+
+    // }
+
     switch (type) {
-      case START_STOP:
+      case START:
+      case STOP:
         confirm({
           icon: null,
           title: (
@@ -235,7 +210,7 @@ const SubscriptionContentTable = () => {
             >
               <div className="modal-content">
                 <p>{`Do you want to ${
-                  state === "start" ? "start" : "stop"
+                  type === START ? "start" : "stop"
                 } proxy connection?`}</p>
                 {regions.length > 1 ? (
                   <div>
@@ -244,6 +219,9 @@ const SubscriptionContentTable = () => {
                       defaultValue={selectedRegion}
                       style={{
                         width: 160,
+                      }}
+                      onSelect={(value) => {
+                        selectedRegion = value;
                       }}
                       options={options}
                     />
@@ -255,7 +233,7 @@ const SubscriptionContentTable = () => {
             </ConfigProvider>
           ),
           styles: modalStyles,
-          okText: "START",
+          okText: type,
           cancelText: "CANCEL",
           okButtonProps: {
             className: "modal-ok-btn",
@@ -264,53 +242,38 @@ const SubscriptionContentTable = () => {
             className: "modal-cancel-btn",
           },
           onOk() {
-            // getEndpoint(
-            //   apiEndpoint.MPS.SUPSCRIPTION_PROXY_ACTION,
-            //   record.subscriptionname
-            // )
-
-            const data = { attributes: { start: "post" } };
-
-            console.log(111111111111111, JSON.stringify({ data: data }));
-
-            fetch(`http://localhost:1337/api/start-test1s`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
+            getEndpoint(
+              apiEndpoint.MPS.SUPSCRIPTION_PROXY_ACTION,
+              {
+                start: "aaa",
               },
-              body: JSON.stringify({ data: data }),
-            })
+              type
+            )
               .then((res) => {
-                return res.json();
+                modal.success({
+                  title: "SUCCESS",
+                  content: "Subscription Deleted Successfully !",
+                  okButtonProps: {
+                    className: "modal-ok-btn",
+                  },
+                  styles: modalStyles,
+                });
               })
-              .then((data) => console.log(data))
               .catch((error) => {
-                console.log(22, error);
+                modal.error({
+                  title: "ERROR",
+                  content: "Something went wrong. Please try again later.",
+                  okButtonProps: {
+                    className: "modal-ok-btn",
+                  },
+                  styles: modalStyles,
+                });
               });
-            // const axios = require("axios");
-            // axios({
-            //   method: "POST",
-            //   url: `/api/${data.subscriptionname}s`,
-            //   data: data,
-            // })
-            // .then((res) => {
-            //   console.log(111, res);
-            // })
-            // .catch((error) => {
-            //   console.log(22, error);
-            // });
-            modal.error({
-              title: "ERROR",
-              content: "Something went wrong. Please try again later.",
-              okButtonProps: {
-                className: "modal-ok-btn",
-              },
-              styles: modalStyles,
-            });
           },
-          onCancel() {},
+          onCancel() {
+            Modal.destroyAll();
+          },
         });
-
         break;
       case DELETE:
         confirm({
@@ -325,9 +288,32 @@ const SubscriptionContentTable = () => {
           ),
           styles: modalStyles,
           onOk() {
-            handleDeleteData(record.id);
+            getEndpoint(apiEndpoint.MPS.DELETE_MPS_SUBSCRIPTION_DEV, record.id)
+              .then((res) => {
+                handleGetData();
+                modal.success({
+                  title: "SUCCESS",
+                  content: "Subscription Deleted Successfully !",
+                  okButtonProps: {
+                    className: "modal-ok-btn",
+                  },
+                  styles: modalStyles,
+                });
+              })
+              .catch((error) => {
+                modal.error({
+                  title: "ERROR",
+                  content: "Something went wrong. Please try again later.",
+                  okButtonProps: {
+                    className: "modal-ok-btn",
+                  },
+                  styles: modalStyles,
+                });
+              });
           },
-          onCancel() {},
+          onCancel() {
+            Modal.destroyAll();
+          },
           okText: "DELETE",
           cancelText: "CANCEL",
           okButtonProps: {
@@ -364,7 +350,9 @@ const SubscriptionContentTable = () => {
                     <Radio.Group
                       value={value.modalRadioValue}
                       onChange={(e) => {
-                        onModalRadioChange(e);
+                        setModalRadioValue(e.target.value);
+                        selectedOffsetType = e.target.value;
+                        console.log("e", e.target.value);
                       }}
                       className="modal-radio-group"
                     >
@@ -416,6 +404,10 @@ const SubscriptionContentTable = () => {
                         </span>{" "}
                         <Select
                           defaultValue={selectedRegion}
+                          onSelect={(value) => {
+                            selectedRegion = value;
+                            setSelectedRegionValue(value);
+                          }}
                           style={{
                             width: 160,
                           }}
@@ -432,7 +424,9 @@ const SubscriptionContentTable = () => {
                         </span>{" "}
                         <DatePicker
                           showTime
-                          onChange={onDateChange}
+                          onChange={(dateString) => {
+                            selectedTimeStamp = dateString;
+                          }}
                           style={{
                             width: 200,
                           }}
@@ -442,9 +436,11 @@ const SubscriptionContentTable = () => {
                     {value.modalRadioValue === "Copy Offsets" && (
                       <>
                         <Radio.Group
-                          value={value.copyOffsetsRadioValue}
+                          defaultValue={"Migrate"}
                           onChange={(e) => {
-                            onCopyOffsetsRadioChange(e);
+                            checkCopyToMaps = e.target.value;
+                            setCopyOffsetsRadioValue(e.target.value);
+                            setOffsetResetInputValue("");
                           }}
                           className="modal-radio-group"
                         >
@@ -452,12 +448,43 @@ const SubscriptionContentTable = () => {
                           <Radio value={"Rollback"}>Rollback</Radio>
                         </Radio.Group>
                         <div>
-                          <span>From:</span>
-                          <Input />
+                          From:
+                          <Input
+                            value={
+                              value.copyOffsetsRadioValue === "Migrate"
+                                ? value.offsetResetInputValue
+                                : `connect-${
+                                    record.regions[value.selectedRegionValue]
+                                      .connectorName
+                                  }`
+                            }
+                            onChange={(e) => {
+                              inputConsumerGroup = e.target.value;
+                              setOffsetResetInputValue(e.target.value);
+                            }}
+                            disabled={
+                              value.copyOffsetsRadioValue === "Rollback"
+                            }
+                          />
                         </div>
+                        {console.log(inputConsumerGroup)}
                         <div>
-                          <span>To:</span>
-                          <Input />
+                          To:
+                          <Input
+                            value={
+                              value.copyOffsetsRadioValue === "Rollback"
+                                ? value.offsetResetInputValue
+                                : `connect-${
+                                    record.regions[value.selectedRegionValue]
+                                      .connectorName
+                                  }`
+                            }
+                            onChange={(e) => {
+                              inputConsumerGroup = e.target.value;
+                              setOffsetResetInputValue(e.target.value);
+                            }}
+                            disabled={value.copyOffsetsRadioValue === "Migrate"}
+                          />
                         </div>
                       </>
                     )}
@@ -469,17 +496,67 @@ const SubscriptionContentTable = () => {
           styles: modalStyles,
           width: 620,
           onOk() {
-            modal.error({
-              title: "ERROR",
-              content: "500 :",
-              okButtonProps: {
-                className: "modal-ok-btn",
-              },
-              styles: modalStyles,
-            });
+            console.log(222, inputConsumerGroup);
+            console.log(333, selectedOffsetType);
+            let data = {};
+            switch (selectedOffsetType) {
+              case "Earliest":
+                data = { offsetSpec: "EARLISET" };
+                break;
+              case "Latest":
+                data = { offsetSpec: "LATEST" };
+                break;
+              case "To Timestamp":
+                data = {
+                  offsetSpec: "TO_TIMESTAMP",
+                  moveToDate: selectedTimeStamp,
+                };
+                break;
+              case "Copy Offsets":
+                data = {
+                  offsetSpec: "COPY_OFFSETS",
+                  consumerGroup: inputConsumerGroup,
+                  copyToMPS: checkCopyToMaps,
+                };
+                break;
+              default:
+                break;
+            }
+            getEndpoint(apiEndpoint.MPS.POST_TAAS_OFFSET_RESET, data, type)
+              .then((res) => {
+                modal.success({
+                  title: "SUCCESS",
+                  content: "Subscription Deleted Successfully !",
+                  okButtonProps: {
+                    className: "modal-ok-btn",
+                  },
+                  styles: modalStyles,
+                });
+
+                setModalRadioValue("Earliest");
+                setCopyOffsetsRadioValue("Migrate");
+                setOffsetResetInputValue("");
+                setSelectedRegionValue("");
+              })
+              .catch((error) => {
+                modal.error({
+                  title: "ERROR",
+                  content: "Something went wrong. Please try again later.",
+                  okButtonProps: {
+                    className: "modal-ok-btn",
+                  },
+                  styles: modalStyles,
+                });
+              });
           },
-          onCancel() {},
-          okText: "DELETE",
+          onCancel() {
+            setModalRadioValue("Earliest");
+            setCopyOffsetsRadioValue("Migrate");
+            setOffsetResetInputValue("");
+            setSelectedRegionValue("");
+            Modal.destroyAll();
+          },
+          okText: "OFFSET RESET",
           cancelText: "CANCEL",
           okButtonProps: {
             className: "modal-ok-btn",
@@ -489,9 +566,8 @@ const SubscriptionContentTable = () => {
           },
         });
         break;
-
       default:
-        return null;
+        break;
     }
   };
 
@@ -568,7 +644,8 @@ const SubscriptionContentTable = () => {
             <>
               <p
                 onClick={() => {
-                  handleExecution(START_STOP, "start", record);
+                  handleExecution(START, record);
+
                   hide();
                 }}
               >
@@ -577,7 +654,8 @@ const SubscriptionContentTable = () => {
               </p>
               <p
                 onClick={() => {
-                  handleExecution(START_STOP, "stop", record);
+                  handleExecution(STOP, record);
+
                   hide();
                 }}
               >
@@ -586,7 +664,8 @@ const SubscriptionContentTable = () => {
               </p>
               <p
                 onClick={() => {
-                  handleExecution(DELETE, _, record);
+                  handleExecution(DELETE, record);
+
                   hide();
                 }}
               >
@@ -595,7 +674,7 @@ const SubscriptionContentTable = () => {
               </p>
               <p
                 onClick={() => {
-                  handleExecution(OFFSET_RESET, _, record);
+                  handleExecution(OFFSET_RESET, record);
                   hide();
                 }}
               >
@@ -624,6 +703,8 @@ const SubscriptionContentTable = () => {
       value={{
         modalRadioValue: modalRadioValue,
         copyOffsetsRadioValue: copyOffsetsRadioValue,
+        selectedRegionValue: selectedRegionValue,
+        offsetResetInputValue: offsetResetInputValue,
       }}
     >
       {isLoading ? (
