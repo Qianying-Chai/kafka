@@ -23,11 +23,14 @@ import {
 const SubscriptionContentTable = () => {
   const [modal, contextHolder] = Modal.useModal();
   const { confirm } = modal;
-
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  const [open, setOpen] = useState({});
+  const [actionOpen, setActionOpen] = useState({});
+  const [filterData, setFilterData] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const [modalRadioValue, setModalRadioValue] = useState("Earliest");
   const [offsetResetInputValue, setOffsetResetInputValue] = useState("");
@@ -58,13 +61,13 @@ const SubscriptionContentTable = () => {
         res.data.forEach((i) => {
           covData.push({
             key: i.id,
-            subscriptionname: i.attributes.mpsAppName,
+            subscriptionName: i.attributes.mpsAppName,
             id: i.id,
-            apmid: i.attributes.apmId,
-            adgroup: i.attributes.adGroup,
-            endpointurl: i.attributes.endpoint,
+            apmId: i.attributes.apmId,
+            adGroup: i.attributes.adGroup,
+            endPointUrl: i.attributes.endpoint,
             topic: i.attributes.topicName,
-            slackchannel: i.attributes.channelName,
+            slackChannel: i.attributes.channelName,
             cluster: i.attributes.clusterName,
             regions: i.attributes.regions,
           });
@@ -85,15 +88,77 @@ const SubscriptionContentTable = () => {
     handleGetData();
   }, [pageSize, page]);
 
+  const handleInputChange = (dataIndex, value) => {
+    setIsFiltering(value);
+    switch (dataIndex) {
+      case "Subscription Name":
+        setFilterData(
+          data?.filter((i) => {
+            return i.subscriptionName
+              .toLowerCase()
+              .includes(value.toLowerCase());
+          })
+        );
+        break;
+      case "APM Id":
+        setFilterData(
+          data?.filter((i) => {
+            return i.apmId?.toLowerCase()?.includes(value.toLowerCase());
+          })
+        );
+        break;
+      case "AD Group":
+        setFilterData(
+          data?.filter((i) => {
+            return i.adGroup?.toLowerCase()?.includes(value.toLowerCase());
+          })
+        );
+        break;
+      case "End Point URI":
+        setFilterData(
+          data?.filter((i) => {
+            return i.endPointUrl?.toLowerCase()?.includes(value.toLowerCase());
+          })
+        );
+        break;
+      case "Topic":
+        setFilterData(
+          data?.filter((i) => {
+            return i.topic?.toLowerCase()?.includes(value.toLowerCase());
+          })
+        );
+        break;
+      case "Cluster":
+        setFilterData(
+          data?.filter((i) => {
+            return i.cluster?.toLowerCase()?.includes(value.toLowerCase());
+          })
+        );
+        break;
+      case "Slack Channel":
+        setFilterData(
+          data?.filter((i) => {
+            return i.slackChannel?.toLowerCase()?.includes(value.toLowerCase());
+          })
+        );
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
       <div
@@ -104,9 +169,9 @@ const SubscriptionContentTable = () => {
           ref={searchInput}
           placeholder={`Input ${dataIndex} to search`}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
+          onChange={(e) => {
+            handleInputChange(dataIndex, e.target.value);
+          }}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             display: "block",
@@ -123,8 +188,10 @@ const SubscriptionContentTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    // onFilter: (value, record) => {
+
+    //   record[dataIndex].toString().toLowerCase().includes(value.toLowerCase());
+    // },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -147,17 +214,17 @@ const SubscriptionContentTable = () => {
   });
 
   const handleOpenChange = (newOpen, id) => {
-    setOpen({ [id]: newOpen });
+    setActionOpen({ [id]: newOpen });
   };
 
   const hide = () => {
-    setOpen(false);
+    setActionOpen(false);
   };
 
-  const START = "START";
-  const STOP = "STOP";
-  const DELETE = "DELETE";
-  const OFFSET_RESET = "OFFSET_RESET";
+  // const "START" = ""START"";
+  // const "STOP" = ""STOP"";
+  // const "DELETE" = ""DELETE"";
+  // const OFFSET_RESET = "OFFSET_RESET";
 
   const handleExecution = (type, record) => {
     let regions = Object.keys(record.regions);
@@ -183,21 +250,20 @@ const SubscriptionContentTable = () => {
       },
     };
 
-    // const handleStateChanges = (radioValue, offsetRadio) => {
-    //   setModalRadioValue("Earliest");
-    //   setCopyOffsetsRadioValue("Migrate");
-    //   setOffsetResetInputValue("");
-    //   setSelectedRegionValue("");
-
-    // }
+    const handleStateChanges = (radioValue, offsetRadio) => {
+      setModalRadioValue(radioValue);
+      setCopyOffsetsRadioValue(offsetRadio);
+      setOffsetResetInputValue("");
+      setSelectedRegionValue("");
+    };
 
     switch (type) {
-      case START:
-      case STOP:
+      case "START":
+      case "STOP":
         confirm({
           icon: null,
           title: (
-            <div className="modal-title">{`Subscription Name : ${record.subscriptionname}`}</div>
+            <div className="modal-title">{`Subscription Name : ${record.subscriptionName}`}</div>
           ),
 
           content: (
@@ -210,7 +276,7 @@ const SubscriptionContentTable = () => {
             >
               <div className="modal-content">
                 <p>{`Do you want to ${
-                  type === START ? "start" : "stop"
+                  type === "START" ? "start" : "stop"
                 } proxy connection?`}</p>
                 {regions.length > 1 ? (
                   <div>
@@ -275,11 +341,11 @@ const SubscriptionContentTable = () => {
           },
         });
         break;
-      case DELETE:
+      case "DELETE":
         confirm({
           icon: null,
           title: (
-            <div className="modal-title">{`Subscription Name : ${record.subscriptionname}`}</div>
+            <div className="modal-title">{`Subscription Name : ${record.subscriptionName}`}</div>
           ),
           content: (
             <div className="modal-content">
@@ -324,11 +390,11 @@ const SubscriptionContentTable = () => {
           },
         });
         break;
-      case OFFSET_RESET:
+      case "OFFSET_RESET":
         confirm({
           icon: null,
           title: (
-            <div className="modal-title">{`Subscription Name : ${record.subscriptionname}`}</div>
+            <div className="modal-title">{`Subscription Name : ${record.subscriptionName}`}</div>
           ),
           content: (
             <ConfigProvider
@@ -345,7 +411,7 @@ const SubscriptionContentTable = () => {
                   <div className="modal-content">
                     <div>
                       please select offset action to subscription{" "}
-                      {record.subscriptionname}?
+                      {record.subscriptionName}?
                     </div>
                     <Radio.Group
                       value={value.modalRadioValue}
@@ -533,10 +599,7 @@ const SubscriptionContentTable = () => {
                   styles: modalStyles,
                 });
 
-                setModalRadioValue("Earliest");
-                setCopyOffsetsRadioValue("Migrate");
-                setOffsetResetInputValue("");
-                setSelectedRegionValue("");
+                handleStateChanges("Earliest", "Migrate");
               })
               .catch((error) => {
                 modal.error({
@@ -550,10 +613,8 @@ const SubscriptionContentTable = () => {
               });
           },
           onCancel() {
-            setModalRadioValue("Earliest");
-            setCopyOffsetsRadioValue("Migrate");
-            setOffsetResetInputValue("");
-            setSelectedRegionValue("");
+            handleStateChanges("Earliest", "Migrate");
+
             Modal.destroyAll();
           },
           okText: "OFFSET RESET",
@@ -579,9 +640,9 @@ const SubscriptionContentTable = () => {
       width: "13%",
       ellipsis: true,
       ...getColumnSearchProps("Subscription Name"),
-      sorter: (a, b) => a.subscriptionname.length - b.subscriptionname.length,
+      sorter: (a, b) => a.subscriptionName.length - b.subscriptionName.length,
       sortDirections: ["descend", "ascend"],
-      render: (_, record) => <a>{record.subscriptionname}</a>,
+      render: (_, record) => <a>{record.subscriptionName}</a>,
     },
     {
       title: "APM Id",
@@ -589,9 +650,9 @@ const SubscriptionContentTable = () => {
       key: "APM Id",
       width: "13%",
       ...getColumnSearchProps("APM Id"),
-      sorter: (a, b) => a.apmid.length - b.apmid.length,
+      sorter: (a, b) => a.apmId.length - b.apmId.length,
       sortDirections: ["descend", "ascend"],
-      render: (_, record) => <a>{record.apmid}</a>,
+      render: (_, record) => <a>{record.apmId}</a>,
     },
     {
       title: "AD Group",
@@ -599,7 +660,7 @@ const SubscriptionContentTable = () => {
       key: "AD Group",
       width: "13%",
       ...getColumnSearchProps("AD Group"),
-      render: (_, record) => <a>{record.adgroup}</a>,
+      render: (_, record) => <a>{record.adGroup}</a>,
     },
     {
       title: "End Point URI",
@@ -607,7 +668,7 @@ const SubscriptionContentTable = () => {
       key: "End Point URI",
       width: "13%",
       ...getColumnSearchProps("End Point URI"),
-      render: (_, record) => <a>{record.endpointurl}</a>,
+      render: (_, record) => <a>{record.endPointUrl}</a>,
     },
     {
       title: "Topic",
@@ -631,7 +692,7 @@ const SubscriptionContentTable = () => {
       key: "Slack Channel",
       width: "13%",
       ...getColumnSearchProps("Slack Channel"),
-      render: (_, record) => <a>{record.slackchannel}</a>,
+      render: (_, record) => <a>{record.slackChannel}</a>,
     },
     {
       title: "Action",
@@ -644,7 +705,7 @@ const SubscriptionContentTable = () => {
             <>
               <p
                 onClick={() => {
-                  handleExecution(START, record);
+                  handleExecution("START", record);
 
                   hide();
                 }}
@@ -654,7 +715,7 @@ const SubscriptionContentTable = () => {
               </p>
               <p
                 onClick={() => {
-                  handleExecution(STOP, record);
+                  handleExecution("STOP", record);
 
                   hide();
                 }}
@@ -664,7 +725,7 @@ const SubscriptionContentTable = () => {
               </p>
               <p
                 onClick={() => {
-                  handleExecution(DELETE, record);
+                  handleExecution("DELETE", record);
 
                   hide();
                 }}
@@ -674,7 +735,7 @@ const SubscriptionContentTable = () => {
               </p>
               <p
                 onClick={() => {
-                  handleExecution(OFFSET_RESET, record);
+                  handleExecution("OFFSET_RESET", record);
                   hide();
                 }}
               >
@@ -684,7 +745,7 @@ const SubscriptionContentTable = () => {
             </>
           }
           trigger="click"
-          open={open[record.id]}
+          open={actionOpen[record.id]}
           onOpenChange={(newOpen) => {
             handleOpenChange(newOpen, record.id);
           }}
@@ -694,9 +755,6 @@ const SubscriptionContentTable = () => {
       ),
     },
   ];
-
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <AppContext.Provider
@@ -713,7 +771,7 @@ const SubscriptionContentTable = () => {
         <Table
           style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
           columns={columns}
-          dataSource={data}
+          dataSource={isFiltering ? filterData : data}
           pagination={{
             showSizeChanger: true,
             showQuickJumper: true,
@@ -728,4 +786,5 @@ const SubscriptionContentTable = () => {
     </AppContext.Provider>
   );
 };
+
 export default SubscriptionContentTable;
