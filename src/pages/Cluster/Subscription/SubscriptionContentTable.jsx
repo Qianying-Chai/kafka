@@ -25,13 +25,16 @@ const SubscriptionContentTable = () => {
   const { confirm } = modal;
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [paginationFiltersIndex, setPaginationFiltersIndex] = useState("");
+  const [tableSorterOrder, setTableSorterOrder] = useState("");
+  const [tableSorterKey, setTableSorterKey] = useState("");
+  const [tableInputValue, setTableInputValue] = useState("");
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  const [actionOpen, setActionOpen] = useState({});
-  const [filterData, setFilterData] = useState([]);
-  const [isFiltering, setIsFiltering] = useState(false);
 
+  const [actionOpen, setActionOpen] = useState({});
   const [modalRadioValue, setModalRadioValue] = useState("Earliest");
   const [offsetResetInputValue, setOffsetResetInputValue] = useState("");
   const [copyOffsetsRadioValue, setCopyOffsetsRadioValue] = useState("Migrate");
@@ -41,7 +44,82 @@ const SubscriptionContentTable = () => {
   const pagination = useSelector((state) => state.pagination);
   const { pageSize, page, total } = pagination;
 
-  const handleChangePagination = (page) => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const handleGetData = () => {
+    const url = `http://localhost:1337/api/cluster-subscriptions?${
+      paginationFiltersIndex
+        ? `filters[${paginationFiltersIndex}][$contains]=${tableInputValue}`
+        : `pagination[page]=${page}&pagination[pageSize]=${pageSize}`
+    }${tableSorterOrder ? `&sort=${tableSorterKey}:${tableSorterOrder}` : ""}`;
+
+    // `http://localhost:1337/api/cluster-subscriptions?${
+    //   paginationFiltersIndex
+    //     ? `filters[${paginationFiltersIndex}][$contains]=${tableInputValue}`
+    //     : tableSorterOrder
+    //     ? `&sort=${tableSorterKey}:${tableSorterOrder}`
+    //     : `pagination[page]=${page}&pagination[pageSize]=${pageSize}`
+    // }`;
+    fetch(url, { signal })
+      .then((res) => res.json())
+      .then((res) => {
+        setIsLoading(false);
+        const covData = [];
+        res.data.forEach((i) => {
+          covData.push({
+            key: i.id,
+            mpsAppName: i.attributes.mpsAppName,
+            id: i.id,
+            apmId: i.attributes.apmId,
+            adGroup: i.attributes.adGroup,
+            endpoint: i.attributes.endpoint,
+            topicName: i.attributes.topicName,
+            channelName: i.attributes.channelName,
+            clusterName: i.attributes.clusterName,
+            regions: i.attributes.regions,
+          });
+        });
+        setData(covData);
+        dispatch(
+          setPagination({
+            ...pagination,
+            total: res.meta.pagination.total,
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const abortFetching = () => {
+    controller.abort();
+  };
+
+  useEffect(() => {
+    handleGetData();
+  }, [
+    pageSize,
+    page,
+    paginationFiltersIndex,
+    tableInputValue,
+    tableSorterOrder,
+    tableSorterKey,
+  ]);
+
+  const handleTableChange = (page, _, extra) => {
+    abortFetching();
+    console.log(extra);
+
+    if (extra.order === "ascend") {
+      setTableSorterOrder("asc");
+    } else if (extra.order === "descend") {
+      setTableSorterOrder("desc");
+    } else {
+      return null;
+    }
+    setTableSorterKey(extra.columnKey);
+
     dispatch(
       setPagination({
         ...pagination,
@@ -51,101 +129,10 @@ const SubscriptionContentTable = () => {
     );
   };
 
-  const handleGetData = () => {
-    const url = `http://localhost:1337/api/cluster-subscriptions?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
-    fetch(url)
-      .then((res) => res.json())
-      .then((res) => {
-        setIsLoading(false);
-        const covData = [];
-        res.data.forEach((i) => {
-          covData.push({
-            key: i.id,
-            subscriptionName: i.attributes.mpsAppName,
-            id: i.id,
-            apmId: i.attributes.apmId,
-            adGroup: i.attributes.adGroup,
-            endPointUrl: i.attributes.endpoint,
-            topic: i.attributes.topicName,
-            slackChannel: i.attributes.channelName,
-            cluster: i.attributes.clusterName,
-            regions: i.attributes.regions,
-          });
-        });
-        setData(covData);
-
-        dispatch(
-          setPagination({
-            ...pagination,
-            total: res.meta.pagination.total,
-          })
-        );
-      })
-      .catch((error) => console.log(error));
-  };
-
-  useEffect(() => {
-    handleGetData();
-  }, [pageSize, page]);
-
   const handleInputChange = (dataIndex, value) => {
-    setIsFiltering(value);
-    switch (dataIndex) {
-      case "Subscription Name":
-        setFilterData(
-          data?.filter((i) => {
-            return i.subscriptionName
-              .toLowerCase()
-              .includes(value.toLowerCase());
-          })
-        );
-        break;
-      case "APM Id":
-        setFilterData(
-          data?.filter((i) => {
-            return i.apmId?.toLowerCase()?.includes(value.toLowerCase());
-          })
-        );
-        break;
-      case "AD Group":
-        setFilterData(
-          data?.filter((i) => {
-            return i.adGroup?.toLowerCase()?.includes(value.toLowerCase());
-          })
-        );
-        break;
-      case "End Point URI":
-        setFilterData(
-          data?.filter((i) => {
-            return i.endPointUrl?.toLowerCase()?.includes(value.toLowerCase());
-          })
-        );
-        break;
-      case "Topic":
-        setFilterData(
-          data?.filter((i) => {
-            return i.topic?.toLowerCase()?.includes(value.toLowerCase());
-          })
-        );
-        break;
-      case "Cluster":
-        setFilterData(
-          data?.filter((i) => {
-            return i.cluster?.toLowerCase()?.includes(value.toLowerCase());
-          })
-        );
-        break;
-      case "Slack Channel":
-        setFilterData(
-          data?.filter((i) => {
-            return i.slackChannel?.toLowerCase()?.includes(value.toLowerCase());
-          })
-        );
-        break;
-
-      default:
-        break;
-    }
+    abortFetching();
+    setPaginationFiltersIndex(dataIndex);
+    setTableInputValue(value);
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -160,7 +147,7 @@ const SubscriptionContentTable = () => {
   };
 
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+    filterDropdown: ({ selectedKeys, confirm }) => (
       <div
         onKeyDown={(e) => e.stopPropagation()}
         style={{ width: "300px", position: "absolute", left: "25px" }}
@@ -188,10 +175,7 @@ const SubscriptionContentTable = () => {
         }}
       />
     ),
-    // onFilter: (value, record) => {
 
-    //   record[dataIndex].toString().toLowerCase().includes(value.toLowerCase());
-    // },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -220,11 +204,6 @@ const SubscriptionContentTable = () => {
   const hide = () => {
     setActionOpen(false);
   };
-
-  // const "START" = ""START"";
-  // const "STOP" = ""STOP"";
-  // const "DELETE" = ""DELETE"";
-  // const OFFSET_RESET = "OFFSET_RESET";
 
   const handleExecution = (type, record) => {
     let regions = Object.keys(record.regions);
@@ -263,7 +242,7 @@ const SubscriptionContentTable = () => {
         confirm({
           icon: null,
           title: (
-            <div className="modal-title">{`Subscription Name : ${record.subscriptionName}`}</div>
+            <div className="modal-title">{`Subscription Name : ${record.mpsAppName}`}</div>
           ),
 
           content: (
@@ -345,7 +324,7 @@ const SubscriptionContentTable = () => {
         confirm({
           icon: null,
           title: (
-            <div className="modal-title">{`Subscription Name : ${record.subscriptionName}`}</div>
+            <div className="modal-title">{`Subscription Name : ${record.mpsAppName}`}</div>
           ),
           content: (
             <div className="modal-content">
@@ -394,7 +373,7 @@ const SubscriptionContentTable = () => {
         confirm({
           icon: null,
           title: (
-            <div className="modal-title">{`Subscription Name : ${record.subscriptionName}`}</div>
+            <div className="modal-title">{`Subscription Name : ${record.mpsAppName}`}</div>
           ),
           content: (
             <ConfigProvider
@@ -411,7 +390,7 @@ const SubscriptionContentTable = () => {
                   <div className="modal-content">
                     <div>
                       please select offset action to subscription{" "}
-                      {record.subscriptionName}?
+                      {record.mpsAppName}?
                     </div>
                     <Radio.Group
                       value={value.modalRadioValue}
@@ -635,69 +614,59 @@ const SubscriptionContentTable = () => {
   const columns = [
     {
       title: "Subscription Name",
-      dataIndex: "Subscription Name",
-      key: "Subscription Name",
+      key: "mpsAppName",
       width: "13%",
       ellipsis: true,
-      ...getColumnSearchProps("Subscription Name"),
-      sorter: (a, b) => a.subscriptionName.length - b.subscriptionName.length,
-      sortDirections: ["descend", "ascend"],
-      render: (_, record) => <a>{record.subscriptionName}</a>,
+      sorter: true,
+      ...getColumnSearchProps("mpsAppName"),
+      render: (_, record) => <a>{record.mpsAppName}</a>,
     },
     {
       title: "APM Id",
-      dataIndex: "APM Id",
-      key: "APM Id",
+      key: "apmId",
       width: "13%",
-      ...getColumnSearchProps("APM Id"),
-      sorter: (a, b) => a.apmId.length - b.apmId.length,
-      sortDirections: ["descend", "ascend"],
+      sorter: true,
+      ...getColumnSearchProps("apmId"),
       render: (_, record) => <a>{record.apmId}</a>,
     },
     {
       title: "AD Group",
-      dataIndex: "AD Group",
-      key: "AD Group",
+      key: "adGroup",
       width: "13%",
-      ...getColumnSearchProps("AD Group"),
+      ...getColumnSearchProps("adGroup"),
       render: (_, record) => <a>{record.adGroup}</a>,
     },
     {
       title: "End Point URI",
-      dataIndex: "End Point URI",
-      key: "End Point URI",
+      key: "endpoint",
       width: "13%",
-      ...getColumnSearchProps("End Point URI"),
-      render: (_, record) => <a>{record.endPointUrl}</a>,
+      ...getColumnSearchProps("endpoint"),
+      render: (_, record) => <a>{record.endpoint}</a>,
     },
     {
       title: "Topic",
-      dataIndex: "Topic",
-      key: "Topic",
+      key: "topicName",
       width: "13%",
-      ...getColumnSearchProps("Topic"),
-      render: (_, record) => <a>{record.topic}</a>,
+      ...getColumnSearchProps("topicName"),
+      render: (_, record) => <a>{record.topicName}</a>,
     },
     {
       title: "Cluster",
-      dataIndex: "Cluster",
-      key: "Cluster",
+      key: "clusterName",
       width: "13%",
-      ...getColumnSearchProps("Cluster"),
-      render: (_, record) => <a>{record.cluster}</a>,
+      ...getColumnSearchProps("clusterName"),
+      render: (_, record) => <a>{record.clusterName}</a>,
     },
     {
       title: "Slack Channel",
-      dataIndex: "Slack Channel",
-      key: "Slack Channel",
+      key: "channelName",
       width: "13%",
-      ...getColumnSearchProps("Slack Channel"),
-      render: (_, record) => <a>{record.slackChannel}</a>,
+      ...getColumnSearchProps("channelName"),
+      render: (_, record) => <a>{record.channelName}</a>,
     },
     {
       title: "Action",
-      dataIndex: "Action",
-      key: "Action",
+      key: "action",
       width: "5%",
       render: (_, record) => (
         <Popover
@@ -771,14 +740,14 @@ const SubscriptionContentTable = () => {
         <Table
           style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
           columns={columns}
-          dataSource={isFiltering ? filterData : data}
+          dataSource={data}
           pagination={{
             showSizeChanger: true,
             showQuickJumper: true,
             total: total,
             // size: "small",
           }}
-          onChange={handleChangePagination}
+          onChange={handleTableChange}
         />
       )}
 
