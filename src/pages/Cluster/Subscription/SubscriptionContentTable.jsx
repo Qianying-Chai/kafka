@@ -40,12 +40,14 @@ const SubscriptionContentTable = () => {
   const [copyOffsetsRadioValue, setCopyOffsetsRadioValue] = useState("Migrate");
   const [selectedRegionValue, setSelectedRegionValue] = useState("");
 
+  const [testValue, setTestValue] = useState("1");
+
   const dispatch = useDispatch();
   const pagination = useSelector((state) => state.pagination);
   const { pageSize, page, total } = pagination;
 
-  const controller = new AbortController();
-  const signal = controller.signal;
+  const abortController = new AbortController();
+  const signal = abortController.signal;
   const handleGetData = () => {
     const url = `http://localhost:1337/api/cluster-subscriptions?${
       paginationFiltersIndex
@@ -53,13 +55,6 @@ const SubscriptionContentTable = () => {
         : `pagination[page]=${page}&pagination[pageSize]=${pageSize}`
     }${tableSorterOrder ? `&sort=${tableSorterKey}:${tableSorterOrder}` : ""}`;
 
-    // `http://localhost:1337/api/cluster-subscriptions?${
-    //   paginationFiltersIndex
-    //     ? `filters[${paginationFiltersIndex}][$contains]=${tableInputValue}`
-    //     : tableSorterOrder
-    //     ? `&sort=${tableSorterKey}:${tableSorterOrder}`
-    //     : `pagination[page]=${page}&pagination[pageSize]=${pageSize}`
-    // }`;
     fetch(url, { signal })
       .then((res) => res.json())
       .then((res) => {
@@ -79,6 +74,7 @@ const SubscriptionContentTable = () => {
             regions: i.attributes.regions,
           });
         });
+
         setData(covData);
         dispatch(
           setPagination({
@@ -93,7 +89,7 @@ const SubscriptionContentTable = () => {
   };
 
   const abortFetching = () => {
-    controller.abort();
+    abortController.abort();
   };
 
   useEffect(() => {
@@ -109,7 +105,6 @@ const SubscriptionContentTable = () => {
 
   const handleTableChange = (page, _, extra) => {
     abortFetching();
-    console.log(extra);
 
     if (extra.order === "ascend") {
       setTableSorterOrder("asc");
@@ -201,7 +196,7 @@ const SubscriptionContentTable = () => {
     setActionOpen({ [id]: newOpen });
   };
 
-  const hide = () => {
+  const hideAction = () => {
     setActionOpen(false);
   };
 
@@ -253,28 +248,35 @@ const SubscriptionContentTable = () => {
                 },
               }}
             >
-              <div className="modal-content">
-                <p>{`Do you want to ${
-                  type === "START" ? "start" : "stop"
-                } proxy connection?`}</p>
-                {regions.length > 1 ? (
-                  <div>
-                    <span className="modal-select-prefix">Select Region:</span>{" "}
-                    <Select
-                      defaultValue={selectedRegion}
-                      style={{
-                        width: 160,
-                      }}
-                      onSelect={(value) => {
-                        selectedRegion = value;
-                      }}
-                      options={options}
-                    />
+              <AppContext.Consumer>
+                {(value) => (
+                  <div className="modal-content">
+                    <p>{`Do you want to ${
+                      type === "START" ? "start" : "stop"
+                    } proxy connection?`}</p>
+                    {regions.length > 1 ? (
+                      <div>
+                        <span className="modal-select-prefix">
+                          Select Region:
+                        </span>{" "}
+                        <Select
+                          defaultValue={selectedRegion}
+                          style={{
+                            width: 160,
+                          }}
+                          onSelect={(value) => {
+                            selectedRegion = value;
+                          }}
+                          options={options}
+                        />
+                        <Input onChange={(e) => setTestValue(e.target.value)} />
+                      </div>
+                    ) : (
+                      <div>Region: {regions}</div>
+                    )}
                   </div>
-                ) : (
-                  <div>Region: {regions}</div>
                 )}
-              </div>
+              </AppContext.Consumer>
             </ConfigProvider>
           ),
           styles: modalStyles,
@@ -541,8 +543,6 @@ const SubscriptionContentTable = () => {
           styles: modalStyles,
           width: 620,
           onOk() {
-            console.log(222, inputConsumerGroup);
-            console.log(333, selectedOffsetType);
             let data = {};
             switch (selectedOffsetType) {
               case "Earliest":
@@ -676,7 +676,7 @@ const SubscriptionContentTable = () => {
                 onClick={() => {
                   handleExecution("START", record);
 
-                  hide();
+                  hideAction();
                 }}
               >
                 {" "}
@@ -686,7 +686,7 @@ const SubscriptionContentTable = () => {
                 onClick={() => {
                   handleExecution("STOP", record);
 
-                  hide();
+                  hideAction();
                 }}
               >
                 {" "}
@@ -696,7 +696,7 @@ const SubscriptionContentTable = () => {
                 onClick={() => {
                   handleExecution("DELETE", record);
 
-                  hide();
+                  hideAction();
                 }}
               >
                 {" "}
@@ -705,7 +705,7 @@ const SubscriptionContentTable = () => {
               <p
                 onClick={() => {
                   handleExecution("OFFSET_RESET", record);
-                  hide();
+                  hideAction();
                 }}
               >
                 {" "}
@@ -732,6 +732,7 @@ const SubscriptionContentTable = () => {
         copyOffsetsRadioValue: copyOffsetsRadioValue,
         selectedRegionValue: selectedRegionValue,
         offsetResetInputValue: offsetResetInputValue,
+        testValue: testValue,
       }}
     >
       {isLoading ? (

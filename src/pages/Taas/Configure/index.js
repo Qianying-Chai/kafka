@@ -1,6 +1,9 @@
 import React from "react";
 import axios from "axios";
 export const apiEndpoint = {
+  LEGACY: {
+    DELETE_NON_PROXY_SUBSCRIPTION_DEV: "DELETE_NON_PROXY_SUBSCRIPTION_DEV",
+  },
   MPS: {
     SUPSCRIPTION_PROXY_ACTION: "SUPSCRIPTION_PROXY_ACTION",
     POST_TAAS_OFFSET_RESET: "POST_TAAS_OFFSET_RESET",
@@ -27,6 +30,8 @@ export const getEndpoint = (type, data, actionState) => {
       return axios.delete(
         `http://localhost:1337/api/cluster-subscriptions/${data}`
       );
+    case apiEndpoint.LEGACY.DELETE_NON_PROXY_SUBSCRIPTION_DEV:
+      return axios.delete(`http://localhost:1337/api/subscriptions/${data}`);
 
     default:
       return null;
