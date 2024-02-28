@@ -1,8 +1,8 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import "../Style/CreateSubscriptionNonproxy.css";
-import { setPagination } from "../../../../redux/reducer";
+import { setTaasSubNonProxyPaginator } from "../../../../redux/action";
 import { apiEndpoint, getEndpoint } from "../../Configure";
 
 import { Table, Modal, Popover } from "antd";
@@ -23,18 +23,20 @@ const SubscriptionsNonProxyContentTable = (props) => {
   const [actionRecord, setActionRecord] = useState([]);
 
   const dispatch = useDispatch();
-  const pagination = useSelector((state) => state.pagination);
-  const { pageSize, page, total } = pagination;
+  const taasSubNonProxyPaginator = useSelector(
+    (state) => state.taasSubNonProxyPaginator
+  );
+  const { pageSize, total } = taasSubNonProxyPaginator;
 
   const taasSubNonProxyData = useSelector((state) => state.taasSubNonProxyData);
 
-  const handleSubscriptionsTableChange = (page, _, extra) => {
+  const handleSubscriptionsTableChange = (page) => {
     abortFetching();
     dispatch(
-      setPagination({
+      setTaasSubNonProxyPaginator({
+        ...taasSubNonProxyPaginator,
         pageSize: page.pageSize,
         page: page.current,
-        total: page.total,
       })
     );
   };
@@ -274,6 +276,7 @@ const SubscriptionsNonProxyContentTable = (props) => {
         pagination={{
           showSizeChanger: true,
           total: total,
+          defaultPageSize: pageSize,
           // size: "small",
         }}
       />

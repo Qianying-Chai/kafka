@@ -1,19 +1,32 @@
-import React, { useEffect, useState, useRef } from "react";
-import ComponentsTable from "../../../Components/ComponentsTable";
-import { useSelector } from "react-redux";
-import { Button, Space } from "antd";
+import React, { useState, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setTaasSubProxyPaginator,
+  setTaasSubProxySorter,
+  setTaasSubProxyFilter,
+} from "../../../../redux/action";
+
 import Highlighter from "react-highlight-words";
 import { SearchOutlined, MoreOutlined } from "@ant-design/icons";
-import { Input, Table } from "antd";
+import { Input, Table, Popover, Modal } from "antd";
 
-const SubscriptionsProxyContentTable = () => {
+const SubscriptionsProxyContentTable = (props) => {
+  const { abortFetching } = props;
+  const [isActionPopoverOpen, setIsActionPopoverOpen] = useState({});
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
+  const [actionData, setActionData] = useState({});
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [clickedPopoverItem, setClickedPopoverItem] = useState("");
   const searchInput = useRef(null);
 
+  const dispatch = useDispatch();
+  const taasSubProxyPaginator = useSelector(
+    (state) => state.taasSubProxyPaginator
+  );
+  const { total } = taasSubProxyPaginator;
+
   const taasSubProxyData = useSelector((state) => state.taasSubProxyData);
-  const pagination = useSelector((state) => state.pagination);
-  const { pageSize, page, total } = pagination;
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -21,81 +34,39 @@ const SubscriptionsProxyContentTable = () => {
     setSearchedColumn(dataIndex);
   };
 
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
+  // const handleReset = (clearFilters) => {
+  //   clearFilters();
+  //   setSearchText("");
+  // };
+
+  const handleProxyTableInput = (dataIndex, value) => {
+    abortFetching();
+    dispatch(
+      setTaasSubProxyFilter({
+        filterKey: dataIndex,
+        filterValue: value,
+      })
+    );
   };
+
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
+    filterDropdown: ({ selectedKeys, confirm }) => (
       <div
-        style={{
-          padding: 8,
-        }}
         onKeyDown={(e) => e.stopPropagation()}
+        style={{ width: "300px", position: "absolute", left: "25px" }}
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Input ${dataIndex} to search`}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
+          onChange={(e) => handleProxyTableInput(dataIndex, e.target.value)}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
-            marginBottom: 8,
             display: "block",
+            width: "100%",
+            marginRight: "10px",
           }}
         />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
       </div>
     ),
     filterIcon: (filtered) => (
@@ -105,11 +76,10 @@ const SubscriptionsProxyContentTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
+      } else {
       }
     },
     onCell: (text) =>
@@ -127,71 +97,189 @@ const SubscriptionsProxyContentTable = () => {
         text
       ),
   });
+  const handleOpenChange = (newOpen, id) => {
+    setIsActionPopoverOpen({ [id]: newOpen });
+  };
+
+  const hideActionPopover = () => {
+    setIsActionPopoverOpen(false);
+  };
+
+  const showActionModal = () => {
+    setIsActionModalOpen(true);
+  };
+
+  const handleStartProxyCancelBtn = () => {
+    setIsActionModalOpen(false);
+  };
+
+  const handleStartProxyStartBtn = () => {
+    setIsActionModalOpen(false);
+  };
+
+  const handleStartProxyClick = (record) => {
+    setActionData(record);
+    showActionModal();
+    hideActionPopover();
+    setClickedPopoverItem("Start Proxy");
+  };
+
+  const handleStopProxyClick = (record) => {
+    setActionData(record);
+    showActionModal();
+    hideActionPopover();
+    setClickedPopoverItem("Stop Proxy");
+  };
+
+  const handleDeleteSubClick = (record) => {
+    setActionData(record);
+    showActionModal();
+    hideActionPopover();
+    setClickedPopoverItem("Delete Subscription");
+  };
+
+  const handleOffsetResetClick = (record) => {
+    setActionData(record);
+    showActionModal();
+    hideActionPopover();
+    setClickedPopoverItem("Offset Reset");
+  };
+
+  console.log(actionData);
 
   const subProxyTableColumns = [
     {
       title: "Subscription Name",
-      dataIndex: "Subscription Name",
-      key: "Subscription Name",
+      key: "mpsAppName",
       width: "13%",
-      ...getColumnSearchProps("Subscription Name"),
-      sorter: (a, b) => a.subscriptionname.length - b.subscriptionname.length,
+      sorter: true,
+      ...getColumnSearchProps("mpsAppName"),
       render: (_, record) => <a>{record.subscriptionname}</a>,
     },
     {
       title: "APM Id",
-      dataIndex: "APM Id",
-      key: "APM Id",
+      key: "apmId",
       width: "13%",
-      ...getColumnSearchProps("APM Id"),
-      sorter: (a, b) => a.apmid.length - b.apmid.length,
+      ...getColumnSearchProps("apmId"),
       render: (_, record) => <a>{record.apmid}</a>,
     },
     {
       title: "AD Group",
-      dataIndex: "AD Group",
-      key: "AD Group",
+      key: "adGroup",
       width: "13%",
-      ...getColumnSearchProps("AD Group"),
+      ...getColumnSearchProps("adGroup"),
       render: (_, record) => <a>{record.adgroup}</a>,
     },
     {
       title: "End Point URI",
-      dataIndex: "End Point URI",
-      key: "End Point URI",
+      key: "endpoint",
       width: "13%",
       ellipsis: true,
-      ...getColumnSearchProps("End Point URI"),
+      ...getColumnSearchProps("endpoint"),
       render: (_, record) => <a>{record.endpointurl}</a>,
     },
     {
       title: "Topic",
-      dataIndex: "Topic",
-      key: "Topic",
+      key: "topicName",
       width: "13%",
-      ...getColumnSearchProps("Topic"),
+      ...getColumnSearchProps("topicName"),
       render: (_, record) => <a>{record.topic}</a>,
     },
     {
       title: "Slack Channel",
-      dataIndex: "Slack Channel",
-      key: "Slack Channel",
+      key: "channelName",
       width: "13%",
-      ...getColumnSearchProps("Slack Channel"),
+      ...getColumnSearchProps("channelName"),
       render: (_, record) => <a>{record.slackchannel}</a>,
     },
     {
       title: "Action",
-      dataIndex: "",
       key: "",
       width: "5%",
       render: (_, record) => (
-        <a>
+        <Popover
+          content={
+            <>
+              <p
+                onClick={() => {
+                  handleStartProxyClick(record);
+                }}
+              >
+                {" "}
+                <a style={{ color: "#0751A9" }}>Start Proxy</a>
+              </p>
+              <p
+                onClick={() => {
+                  handleStopProxyClick(record);
+                }}
+              >
+                {" "}
+                <a style={{ color: "#0751A9" }}>Stop Proxy</a>
+              </p>
+              <p
+                onClick={() => {
+                  handleDeleteSubClick(record);
+                }}
+              >
+                {" "}
+                <a style={{ color: "#0751A9" }}>Delete Subscription</a>
+              </p>
+              <p
+                onClick={() => {
+                  handleOffsetResetClick(record);
+                }}
+              >
+                {" "}
+                <a style={{ color: "#0751A9" }}>Offset Reset</a>
+              </p>
+            </>
+          }
+          trigger="click"
+          open={isActionPopoverOpen[record.id]}
+          onOpenChange={(newOpen) => {
+            handleOpenChange(newOpen, record.id);
+          }}
+        >
           <MoreOutlined />
-        </a>
+        </Popover>
       ),
     },
   ];
+
+  const handleSubProxyTableChange = (pagination, _, extra) => {
+    abortFetching();
+
+    if (extra.order === "ascend") {
+      dispatch(
+        setTaasSubProxySorter({
+          sorterOrder: "asc",
+          sorterKey: extra.columnKey,
+        })
+      );
+    } else if (extra.order === "descend") {
+      dispatch(
+        setTaasSubProxySorter({
+          sorterOrder: "desc",
+          sorterKey: extra.columnKey,
+        })
+      );
+    } else {
+      dispatch(
+        setTaasSubProxySorter({
+          sorterOrder: "",
+          sorterKey: "",
+        })
+      );
+    }
+
+    dispatch(
+      setTaasSubProxyPaginator({
+        ...taasSubProxyPaginator,
+        pageSize: pagination.pageSize,
+        page: pagination.current,
+      })
+    );
+  };
 
   return (
     <>
@@ -201,10 +289,26 @@ const SubscriptionsProxyContentTable = () => {
         dataSource={taasSubProxyData}
         pagination={{
           total: total,
-          defaultPageSize: 10,
           // size: "small",
         }}
+        onChange={handleSubProxyTableChange}
       />
+      {clickedPopoverItem === "Start Proxy" && (
+        <Modal
+          title={`Subscription Id: ${actionData.subscriptionname} `}
+          open={isActionModalOpen}
+          onCancel={handleStartProxyCancelBtn}
+          onOk={handleStartProxyStartBtn}
+          cancelText={"CANCEL"}
+          okText={"DELETE"}
+          okButtonProps={{ className: "modal-ok-btn" }}
+          cancelButtonProps={{ className: "modal-cancel-btn" }}
+          width={400}
+          closeIcon={false}
+        >
+          <p>Do you want to delete subscription ?</p>
+        </Modal>
+      )}
     </>
   );
 };

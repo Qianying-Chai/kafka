@@ -6,7 +6,7 @@ import ComponentsSpin from "../../Components/ComponentSpin";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { MoreOutlined } from "@ant-design/icons";
-import { setPagination } from "../../../redux/reducer";
+import { setMpsSubPaginator } from "../../../redux/action";
 import { AppContext } from "./AppContext";
 import {
   Input,
@@ -43,7 +43,7 @@ const SubscriptionContentTable = () => {
   const [testValue, setTestValue] = useState("1");
 
   const dispatch = useDispatch();
-  const pagination = useSelector((state) => state.pagination);
+  const pagination = useSelector((state) => state.mpsSubPaginator);
   const { pageSize, page, total } = pagination;
 
   const abortController = new AbortController();
@@ -77,9 +77,8 @@ const SubscriptionContentTable = () => {
 
         setData(covData);
         dispatch(
-          setPagination({
+          setMpsSubPaginator({
             ...pagination,
-            total: res.meta.pagination.total,
           })
         );
       })
@@ -114,9 +113,10 @@ const SubscriptionContentTable = () => {
       return null;
     }
     setTableSorterKey(extra.columnKey);
+    console.log({ extra });
 
     dispatch(
-      setPagination({
+      setMpsSubPaginator({
         ...pagination,
         pageSize: page.pageSize,
         page: page.current,

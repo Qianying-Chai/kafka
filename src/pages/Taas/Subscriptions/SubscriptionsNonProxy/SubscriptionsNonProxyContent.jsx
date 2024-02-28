@@ -10,9 +10,9 @@ import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
 
 import {
-  setPagination,
+  setTaasSubNonProxyPaginator,
   setTaasSubNonProxyData,
-} from "../../../../../src/redux/reducer";
+} from "../../../../redux/action";
 
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Tabs, Input } from "antd";
@@ -30,6 +30,16 @@ const SubscriptionsNonProxyContent = () => {
     },
   ];
 
+  const [isloading, setIsLoading] = useState(true);
+  const [tableFilterInputValue, setTableFilterInputValue] = useState("");
+
+  const dispatch = useDispatch();
+  const taasSubNonProxyPaginator = useSelector(
+    (state) => state.taasSubNonProxyPaginator
+  );
+
+  const { pageSize, page } = taasSubNonProxyPaginator;
+
   const tabItems = [
     {
       key: "NonProxy",
@@ -37,7 +47,7 @@ const SubscriptionsNonProxyContent = () => {
         <Link
           to={`/kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=nonProxy`}
         >
-          NonProxy
+          <span style={{ color: "#41F41" }}>NonProxy</span>
         </Link>
       ),
     },
@@ -47,19 +57,11 @@ const SubscriptionsNonProxyContent = () => {
         <Link
           to={`/kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=proxy`}
         >
-          Proxy
+          <span style={{ color: "#00000099" }}>Proxy</span>
         </Link>
       ),
     },
   ];
-
-  const [isloading, setIsLoading] = useState(true);
-  const [nonProxyInputValue, setNonProxyInputValue] = useState("");
-
-  const dispatch = useDispatch();
-  const pagination = useSelector((state) => state.pagination);
-
-  const { pageSize, page } = pagination;
 
   const abortController = new AbortController();
   const signal = abortController.signal;
@@ -72,42 +74,42 @@ const SubscriptionsNonProxyContent = () => {
           $or: [
             {
               id: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               topicName: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               apmId: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               applicationName: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               activeDirectoryGroup: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               distributionEmail: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               permission: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
             {
               status: {
-                $contains: nonProxyInputValue,
+                $contains: tableFilterInputValue,
               },
             },
           ],
@@ -118,7 +120,7 @@ const SubscriptionsNonProxyContent = () => {
       }
     );
 
-    const url = nonProxyInputValue
+    const url = tableFilterInputValue
       ? `http://localhost:1337/api/subscriptions?${filter}`
       : `http://localhost:1337/api/subscriptions?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
 
@@ -146,24 +148,26 @@ const SubscriptionsNonProxyContent = () => {
         dispatch(setTaasSubNonProxyData(covData));
 
         dispatch(
-          setPagination({ ...pagination, total: res.meta.pagination.total })
+          setTaasSubNonProxyPaginator({
+            ...taasSubNonProxyPaginator,
+            total: res.meta.pagination.total,
+          })
         );
       })
       .catch((error) => console.log(222, error));
   };
 
   const abortFetching = () => {
-    console.log("abort");
     abortController.abort();
   };
 
   useEffect(() => {
     handleGetData();
-  }, [pageSize, page, nonProxyInputValue]);
+  }, [pageSize, page, tableFilterInputValue]);
 
   const handleNonProxyInputChange = (value) => {
     abortFetching();
-    setNonProxyInputValue(value);
+    setTableFilterInputValue(value);
   };
 
   return (
@@ -205,7 +209,7 @@ const SubscriptionsNonProxyContent = () => {
               size="large"
               prefix={<SearchOutlined />}
               style={{ marginBottom: "5px" }}
-              value={nonProxyInputValue}
+              value={tableFilterInputValue}
               onChange={(e) => handleNonProxyInputChange(e.target.value)}
             />
             <SubscriptionsNonProxyContentTable
