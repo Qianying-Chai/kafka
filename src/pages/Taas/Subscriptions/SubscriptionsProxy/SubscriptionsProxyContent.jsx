@@ -93,6 +93,7 @@ const SubscriptionsProxyContent = () => {
             endpointurl: i.attributes.endpoint,
             topic: i.attributes.topicName,
             slackchannel: i.attributes.channelName,
+            regions: i.attributes.regions,
           });
         });
 
@@ -146,7 +147,10 @@ const SubscriptionsProxyContent = () => {
         {isLoading ? (
           <ComponentsSpin />
         ) : (
-          <SubscriptionsProxyContentTable abortFetching={abortFetching} />
+          <SubscriptionsProxyContentTable
+            abortFetching={abortFetching}
+            handleGetSubProxyData={handleGetSubProxyData}
+          />
         )}
       </ComponentsContent>
     </>

@@ -3,6 +3,7 @@ import axios from "axios";
 export const apiEndpoint = {
   LEGACY: {
     DELETE_NON_PROXY_SUBSCRIPTION_DEV: "DELETE_NON_PROXY_SUBSCRIPTION_DEV",
+    DELETE_PROXY_SUBSCRIPTION_DEV: "DELETE_PROXY_SUBSCRIPTION_DEV",
   },
   MPS: {
     SUPSCRIPTION_PROXY_ACTION: "SUPSCRIPTION_PROXY_ACTION",
@@ -11,11 +12,11 @@ export const apiEndpoint = {
   },
 };
 
-export const getEndpoint = (type, data, actionState) => {
+export const getEndpoint = (type, actionType, data) => {
   switch (type) {
     case apiEndpoint.MPS.SUPSCRIPTION_PROXY_ACTION:
       return axios.get(
-        actionState === "START"
+        actionType === "Start Proxy"
           ? `http://localhost:1337/api/starts`
           : `http://localhost:1337/api/stops`
       );
@@ -32,6 +33,10 @@ export const getEndpoint = (type, data, actionState) => {
       );
     case apiEndpoint.LEGACY.DELETE_NON_PROXY_SUBSCRIPTION_DEV:
       return axios.delete(`http://localhost:1337/api/subscriptions/${data}`);
+    case apiEndpoint.LEGACY.DELETE_PROXY_SUBSCRIPTION_DEV:
+      return axios.delete(
+        `http://localhost:1337/api/mps-subscriptions/${data}`
+      );
 
     default:
       return null;

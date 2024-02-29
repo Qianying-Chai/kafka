@@ -201,6 +201,7 @@ const SubscriptionContentTable = () => {
   };
 
   const handleExecution = (type, record) => {
+    console.log(record);
     let regions = Object.keys(record.regions);
     let selectedRegion = regions[0];
     let selectedTimeStamp = "";
@@ -567,6 +568,8 @@ const SubscriptionContentTable = () => {
               default:
                 break;
             }
+
+            console.log(333, type);
             getEndpoint(apiEndpoint.MPS.POST_TAAS_OFFSET_RESET, data, type)
               .then((res) => {
                 modal.success({
