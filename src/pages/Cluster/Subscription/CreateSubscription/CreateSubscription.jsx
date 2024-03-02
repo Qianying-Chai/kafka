@@ -8,7 +8,7 @@ import SourceTopicSelectionForm from "./Form/SourceTopicSelectionForm";
 import TargetApplicationForm from "./Form/TargetApplicationSelection";
 import RequesterDetailsForm from "./Form/RequesterDetailsForm";
 import ConsumerDetailsForm from "../../../Taas/Subscriptions/SubscriptionsProxy/CreateSubscriptions/Form/ComsumerDetailsForm";
-import { Button, ConfigProvider, Divider } from "antd";
+import { Button, ConfigProvider, Divider, Form } from "antd";
 const CreateSubscription = () => {
   return (
     <ConfigProvider
@@ -43,20 +43,26 @@ const CreateSubscription = () => {
         </div>
       </div>
       <ComponentsContent>
-        <DeliverySubscriptionNameForm />
-        <SourceTopicSelectionForm />
-        <TargetApplicationForm />
-        <RequesterDetailsForm />
-        <ConsumerDetailsForm />
-        <Divider />
-        <div className="create-buttons-wrapper">
-          <Button shape="round" className="cancel-button">
-            CANCEL
-          </Button>
-          <Button shape="round" disabled className="disable-submit-button">
-            SUBMIT
-          </Button>
-        </div>
+        <Form>
+          <Form.Item>
+            <DeliverySubscriptionNameForm />
+            <SourceTopicSelectionForm />
+            <TargetApplicationForm />
+            <RequesterDetailsForm />
+            <ConsumerDetailsForm />
+          </Form.Item>
+          <Divider />
+          <Form.Item>
+            <div className="create-buttons-wrapper">
+              <Button shape="round" className="cancel-button">
+                CANCEL
+              </Button>
+              <Button shape="round" disabled className="disable-submit-button">
+                SUBMIT
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
       </ComponentsContent>
     </ConfigProvider>
   );

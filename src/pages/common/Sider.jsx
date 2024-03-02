@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedSiderKey } from "../../redux/action";
 import "./Style/Sider.css";
 import {
   ReadFilled,
@@ -17,6 +19,8 @@ const Sider = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const dispatch = useDispatch();
 
   const items = [
     {
@@ -42,7 +46,7 @@ const Sider = () => {
           icon: React.createElement(DeleteFilled),
         },
         {
-          key: "Subscriptions",
+          key: "Taas Subscriptions",
           label: (
             <Link
               to={`kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=nonProxy`}
@@ -104,7 +108,7 @@ const Sider = () => {
           icon: React.createElement(HddFilled),
         },
         {
-          key: "Subscription",
+          key: "Cluster Subscription",
           label: (
             <Link to={`kafka/mps-clusters-subscriptions`}>
               {categoryConstants.SUBSCRIPTION}
@@ -139,6 +143,9 @@ const Sider = () => {
     },
   ];
 
+  const handleSiderSelect = ({ key }) => {
+    dispatch(setSelectedSiderKey(key));
+  };
   return (
     <ConfigProvider
       theme={{
@@ -176,6 +183,7 @@ const Sider = () => {
             style={{
               color: "#041f41",
             }}
+            onSelect={handleSiderSelect}
           />
         </div>
       </Layout.Sider>

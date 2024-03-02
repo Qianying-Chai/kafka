@@ -19,9 +19,10 @@ import {
   DatePicker,
 } from "antd";
 
-const SubscriptionsProxyContentTable = (props) => {
-  const { abortFetching, handleGetSubProxyData } = props;
-
+const SubscriptionsContentTable = ({
+  abortFetching,
+  handleGetSubProxyData,
+}) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
 
@@ -627,4 +628,4 @@ const SubscriptionsProxyContentTable = (props) => {
     </>
   );
 };
-export default SubscriptionsProxyContentTable;
+export default SubscriptionsContentTable;

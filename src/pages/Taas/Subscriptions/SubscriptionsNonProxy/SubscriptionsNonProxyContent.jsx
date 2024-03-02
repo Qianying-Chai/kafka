@@ -63,6 +63,10 @@ const SubscriptionsNonProxyContent = () => {
     },
   ];
 
+  useEffect(() => {
+    handleGetData();
+  }, [pageSize, page, tableFilterInputValue]);
+
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -160,10 +164,6 @@ const SubscriptionsNonProxyContent = () => {
   const abortFetching = () => {
     abortController.abort();
   };
-
-  useEffect(() => {
-    handleGetData();
-  }, [pageSize, page, tableFilterInputValue]);
 
   const handleNonProxyInputChange = (value) => {
     abortFetching();

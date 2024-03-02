@@ -5,7 +5,7 @@ import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
 import DetailsForm from "./Form/DetailsForm";
 import "../../../Taas/Style/CreateFlow.css";
-import { Button, ConfigProvider, Divider } from "antd";
+import { Button, ConfigProvider, Divider, Form } from "antd";
 
 const CreateTopic = () => {
   return (
@@ -43,16 +43,22 @@ const CreateTopic = () => {
         </div>
       </div>
       <ComponentsContent>
-        <DetailsForm />
-        <Divider />
-        <div className="create-buttons-wrapper">
-          <Button shape="round" className="cancel-button">
-            CANCEL
-          </Button>
-          <Button shape="round" disabled className="disable-submit-button">
-            SUBMIT
-          </Button>
-        </div>
+        <Form>
+          <Form.Item>
+            <DetailsForm />
+          </Form.Item>
+          <Divider />
+          <Form.Item>
+            <div className="create-buttons-wrapper">
+              <Button shape="round" className="cancel-button">
+                CANCEL
+              </Button>
+              <Button shape="round" disabled className="disable-submit-button">
+                SUBMIT
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
       </ComponentsContent>
     </ConfigProvider>
   );

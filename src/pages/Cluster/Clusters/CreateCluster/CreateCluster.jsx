@@ -6,7 +6,7 @@ import ComponentsTitle from "../../../Components/ComponentsTitle";
 import DetailsForm from "./Form/DetailsForm";
 import EnvironmentsForm from "./Form/EnvironmentsForm";
 import "../../../Taas/Style/CreateFlow.css";
-import { Button, ConfigProvider, Divider } from "antd";
+import { Button, ConfigProvider, Divider, Form } from "antd";
 
 const CreateCluster = () => {
   return (
@@ -44,21 +44,23 @@ const CreateCluster = () => {
         </div>
       </div>
       <ComponentsContent>
-        <DetailsForm />
-        <EnvironmentsForm />
-        <Divider />
-        <div className="create-buttons-wrapper">
-          <Button shape="round" className="cancel-button">
-            CANCEL
-          </Button>
-          <Button
-            type="primary"
-            shape="round"
-            className="submit-button primary-submit-button "
-          >
-            SUBMIT
-          </Button>
-        </div>
+        <Form>
+          <DetailsForm />
+          <EnvironmentsForm />
+          <Divider />
+          <div className="create-buttons-wrapper">
+            <Button shape="round" className="cancel-button">
+              CANCEL
+            </Button>
+            <Button
+              type="primary"
+              shape="round"
+              className="submit-button primary-submit-button "
+            >
+              SUBMIT
+            </Button>
+          </div>
+        </Form>
       </ComponentsContent>
     </ConfigProvider>
   );

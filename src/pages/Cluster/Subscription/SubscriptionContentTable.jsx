@@ -1,16 +1,18 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../Style/Subscription.css";
+import {
+  setClusterSubPaginator,
+  setClusterSubFilter,
+  setClusterSubSorter,
+} from "../../../redux/action";
 import { apiEndpoint, getEndpoint } from "../../Taas/Configure";
-import ComponentsSpin from "../../Components/ComponentSpin";
-import { SearchOutlined } from "@ant-design/icons";
+
 import Highlighter from "react-highlight-words";
-import { MoreOutlined } from "@ant-design/icons";
-import { setMpsSubPaginator } from "../../../redux/action";
-import { AppContext } from "./AppContext";
+import { SearchOutlined, MoreOutlined } from "@ant-design/icons";
+
 import {
   Input,
-  ConfigProvider,
   Popover,
   Modal,
   Select,
@@ -20,115 +22,35 @@ import {
   DatePicker,
 } from "antd";
 
-const SubscriptionContentTable = () => {
-  const [modal, contextHolder] = Modal.useModal();
-  const { confirm } = modal;
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [paginationFiltersIndex, setPaginationFiltersIndex] = useState("");
-  const [tableSorterOrder, setTableSorterOrder] = useState("");
-  const [tableSorterKey, setTableSorterKey] = useState("");
-  const [tableInputValue, setTableInputValue] = useState("");
-
+const SubscriptionContentTable = ({
+  abortFetching,
+  handleGetClusterSubData,
+}) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
 
-  const [actionOpen, setActionOpen] = useState({});
+  const [isActionPopoverOpen, setIsActionPopoverOpen] = useState({});
+  const [actionData, setActionData] = useState({});
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [clickedPopoverItem, setClickedPopoverItem] = useState("");
+
   const [modalRadioValue, setModalRadioValue] = useState("Earliest");
   const [offsetResetInputValue, setOffsetResetInputValue] = useState("");
   const [copyOffsetsRadioValue, setCopyOffsetsRadioValue] = useState("Migrate");
-  const [selectedRegionValue, setSelectedRegionValue] = useState("");
+  const [selectedOffsetType, setSelectedOffsetType] = useState("Earliest");
+  const [selectedTimeStamp, setSelectedTimeStamp] = useState("");
+  const [checkCopyToMaps, setCheckCopyToMaps] = useState("Migrate");
+  const [inputConsumerGroup, setInputConsumerGroup] = useState("");
 
-  const [testValue, setTestValue] = useState("1");
+  const [regions, setRegions] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState("");
 
+  const searchInput = useRef(null);
   const dispatch = useDispatch();
-  const pagination = useSelector((state) => state.mpsSubPaginator);
-  const { pageSize, page, total } = pagination;
 
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-  const handleGetData = () => {
-    const url = `http://localhost:1337/api/cluster-subscriptions?${
-      paginationFiltersIndex
-        ? `filters[${paginationFiltersIndex}][$contains]=${tableInputValue}`
-        : `pagination[page]=${page}&pagination[pageSize]=${pageSize}`
-    }${tableSorterOrder ? `&sort=${tableSorterKey}:${tableSorterOrder}` : ""}`;
-
-    fetch(url, { signal })
-      .then((res) => res.json())
-      .then((res) => {
-        setIsLoading(false);
-        const covData = [];
-        res.data.forEach((i) => {
-          covData.push({
-            key: i.id,
-            mpsAppName: i.attributes.mpsAppName,
-            id: i.id,
-            apmId: i.attributes.apmId,
-            adGroup: i.attributes.adGroup,
-            endpoint: i.attributes.endpoint,
-            topicName: i.attributes.topicName,
-            channelName: i.attributes.channelName,
-            clusterName: i.attributes.clusterName,
-            regions: i.attributes.regions,
-          });
-        });
-
-        setData(covData);
-        dispatch(
-          setMpsSubPaginator({
-            ...pagination,
-          })
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const abortFetching = () => {
-    abortController.abort();
-  };
-
-  useEffect(() => {
-    handleGetData();
-  }, [
-    pageSize,
-    page,
-    paginationFiltersIndex,
-    tableInputValue,
-    tableSorterOrder,
-    tableSorterKey,
-  ]);
-
-  const handleTableChange = (page, _, extra) => {
-    abortFetching();
-
-    if (extra.order === "ascend") {
-      setTableSorterOrder("asc");
-    } else if (extra.order === "descend") {
-      setTableSorterOrder("desc");
-    } else {
-      return null;
-    }
-    setTableSorterKey(extra.columnKey);
-    console.log({ extra });
-
-    dispatch(
-      setMpsSubPaginator({
-        ...pagination,
-        pageSize: page.pageSize,
-        page: page.current,
-      })
-    );
-  };
-
-  const handleInputChange = (dataIndex, value) => {
-    abortFetching();
-    setPaginationFiltersIndex(dataIndex);
-    setTableInputValue(value);
-  };
+  const clusterSubPaginator = useSelector((state) => state.clusterSubPaginator);
+  const { total } = clusterSubPaginator;
+  const clusterSubData = useSelector((state) => state.clusterSubData);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -141,6 +63,16 @@ const SubscriptionContentTable = () => {
     setSearchText("");
   };
 
+  const handleClusterTableInput = (dataIndex, value) => {
+    abortFetching();
+    dispatch(
+      setClusterSubFilter({
+        filterKey: dataIndex,
+        filterValue: value,
+      })
+    );
+  };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ selectedKeys, confirm }) => (
       <div
@@ -151,9 +83,7 @@ const SubscriptionContentTable = () => {
           ref={searchInput}
           placeholder={`Input ${dataIndex} to search`}
           value={selectedKeys[0]}
-          onChange={(e) => {
-            handleInputChange(dataIndex, e.target.value);
-          }}
+          onChange={(e) => handleClusterTableInput(dataIndex, e.target.value)}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             display: "block",
@@ -170,7 +100,6 @@ const SubscriptionContentTable = () => {
         }}
       />
     ),
-
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -191,430 +120,148 @@ const SubscriptionContentTable = () => {
         text
       ),
   });
-
   const handleOpenChange = (newOpen, id) => {
-    setActionOpen({ [id]: newOpen });
+    setIsActionPopoverOpen({ [id]: newOpen });
   };
 
-  const hideAction = () => {
-    setActionOpen(false);
+  const hideActionPopover = () => {
+    setIsActionPopoverOpen(false);
+  };
+  const showActionModal = () => {
+    setIsActionModalOpen(true);
   };
 
-  const handleExecution = (type, record) => {
-    console.log(record);
-    let regions = Object.keys(record.regions);
-    let selectedRegion = regions[0];
-    let selectedTimeStamp = "";
-    let inputConsumerGroup = "";
-    let selectedOffsetType = "Earliest";
-    let checkCopyToMaps = "Migrate";
+  const handleModalCancelBtn = () => {
+    setIsActionModalOpen(false);
+  };
 
-    setSelectedRegionValue(selectedRegion);
-
-    const options = regions.map((item) => {
-      return {
-        value: item,
-        label: item,
-      };
-    });
-
-    const modalStyles = {
-      content: {
-        padding: "32px 32px 24px",
-        borderRadius: 0,
-      },
-    };
-
-    const handleStateChanges = (radioValue, offsetRadio) => {
-      setModalRadioValue(radioValue);
-      setCopyOffsetsRadioValue(offsetRadio);
-      setOffsetResetInputValue("");
-      setSelectedRegionValue("");
-    };
-
-    switch (type) {
-      case "START":
-      case "STOP":
-        confirm({
-          icon: null,
-          title: (
-            <div className="modal-title">{`Subscription Name : ${record.mpsAppName}`}</div>
-          ),
-
-          content: (
-            <ConfigProvider
-              theme={{
-                token: {
-                  borderRadius: 0,
-                },
-              }}
-            >
-              <AppContext.Consumer>
-                {(value) => (
-                  <div className="modal-content">
-                    <p>{`Do you want to ${
-                      type === "START" ? "start" : "stop"
-                    } proxy connection?`}</p>
-                    {regions.length > 1 ? (
-                      <div>
-                        <span className="modal-select-prefix">
-                          Select Region:
-                        </span>{" "}
-                        <Select
-                          defaultValue={selectedRegion}
-                          style={{
-                            width: 160,
-                          }}
-                          onSelect={(value) => {
-                            selectedRegion = value;
-                          }}
-                          options={options}
-                        />
-                        <Input onChange={(e) => setTestValue(e.target.value)} />
-                      </div>
-                    ) : (
-                      <div>Region: {regions}</div>
-                    )}
-                  </div>
-                )}
-              </AppContext.Consumer>
-            </ConfigProvider>
-          ),
-          styles: modalStyles,
-          okText: type,
-          cancelText: "CANCEL",
+  const handleStartStopBtn = (actionType) => {
+    setIsActionModalOpen(false);
+    getEndpoint(apiEndpoint.MPS.SUPSCRIPTION_PROXY_ACTION, actionType)
+      .then((res) => {
+        Modal.success({
+          title: "SUCCESS",
+          content: "Subscription Deleted Successfully !",
           okButtonProps: {
             className: "modal-ok-btn",
           },
-          cancelButtonProps: {
-            className: "modal-cancel-btn",
-          },
-          onOk() {
-            getEndpoint(
-              apiEndpoint.MPS.SUPSCRIPTION_PROXY_ACTION,
-              {
-                start: "aaa",
-              },
-              type
-            )
-              .then((res) => {
-                modal.success({
-                  title: "SUCCESS",
-                  content: "Subscription Deleted Successfully !",
-                  okButtonProps: {
-                    className: "modal-ok-btn",
-                  },
-                  styles: modalStyles,
-                });
-              })
-              .catch((error) => {
-                modal.error({
-                  title: "ERROR",
-                  content: "Something went wrong. Please try again later.",
-                  okButtonProps: {
-                    className: "modal-ok-btn",
-                  },
-                  styles: modalStyles,
-                });
-              });
-          },
-          onCancel() {
-            Modal.destroyAll();
-          },
+          styles: modalStyles,
         });
+      })
+      .catch((error) => {
+        Modal.error({
+          title: "ERROR",
+          content: "Something went wrong. Please try again later.",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          styles: modalStyles,
+        });
+      });
+  };
+
+  const handleDeleteSubBtn = () => {
+    setIsActionModalOpen(false);
+    getEndpoint(apiEndpoint.MPS.DELETE_MPS_SUBSCRIPTION_DEV, "", actionData.id)
+      .then((res) => {
+        handleGetClusterSubData();
+        Modal.success({
+          title: "SUCCESS",
+          content: "Subscription Deleted Successfully !",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          styles: modalStyles,
+        });
+      })
+      .catch((error) => {
+        Modal.error({
+          title: "ERROR",
+          content: "Something went wrong. Please try again later.",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          styles: modalStyles,
+        });
+      });
+  };
+
+  const handleOffsetResetBtn = () => {
+    setIsActionModalOpen(false);
+    let data = {};
+    switch (selectedOffsetType) {
+      case "Earliest":
+        data = { offsetSpec: "EARLISET" };
         break;
-      case "DELETE":
-        confirm({
-          icon: null,
-          title: (
-            <div className="modal-title">{`Subscription Name : ${record.mpsAppName}`}</div>
-          ),
-          content: (
-            <div className="modal-content">
-              Do you want to delete subscription?
-            </div>
-          ),
-          styles: modalStyles,
-          onOk() {
-            getEndpoint(apiEndpoint.MPS.DELETE_MPS_SUBSCRIPTION_DEV, record.id)
-              .then((res) => {
-                handleGetData();
-                modal.success({
-                  title: "SUCCESS",
-                  content: "Subscription Deleted Successfully !",
-                  okButtonProps: {
-                    className: "modal-ok-btn",
-                  },
-                  styles: modalStyles,
-                });
-              })
-              .catch((error) => {
-                modal.error({
-                  title: "ERROR",
-                  content: "Something went wrong. Please try again later.",
-                  okButtonProps: {
-                    className: "modal-ok-btn",
-                  },
-                  styles: modalStyles,
-                });
-              });
-          },
-          onCancel() {
-            Modal.destroyAll();
-          },
-          okText: "DELETE",
-          cancelText: "CANCEL",
-          okButtonProps: {
-            className: "modal-ok-btn",
-          },
-          cancelButtonProps: {
-            className: "modal-cancel-btn",
-          },
-        });
+      case "Latest":
+        data = { offsetSpec: "LATEST" };
         break;
-      case "OFFSET_RESET":
-        confirm({
-          icon: null,
-          title: (
-            <div className="modal-title">{`Subscription Name : ${record.mpsAppName}`}</div>
-          ),
-          content: (
-            <ConfigProvider
-              theme={{
-                token: {
-                  borderRadius: 0,
-                  marginLG: 10,
-                  colorPrimary: "#41F41",
-                },
-              }}
-            >
-              <AppContext.Consumer>
-                {(value) => (
-                  <div className="modal-content">
-                    <div>
-                      please select offset action to subscription{" "}
-                      {record.mpsAppName}?
-                    </div>
-                    <Radio.Group
-                      value={value.modalRadioValue}
-                      onChange={(e) => {
-                        setModalRadioValue(e.target.value);
-                        selectedOffsetType = e.target.value;
-                        console.log("e", e.target.value);
-                      }}
-                      className="modal-radio-group"
-                    >
-                      <Radio value={"Earliest"}>Earliest</Radio>
-                      <Radio value={"Latest"}>Latest</Radio>
-                      <Radio value={"To Timestamp"}>To Timestamp</Radio>
-                      <Radio value={"Copy Offsets"}>Copy Offsets</Radio>
-                    </Radio.Group>
-                    <div className="radioReminder">
-                      {value.modalRadioValue === "Earliest" && (
-                        <p>
-                          {" "}
-                          MPS consumer group will be moved to earliest offsets
-                          only if the consumer group exists.
-                        </p>
-                      )}
-                      {value.modalRadioValue === "Latest" && (
-                        <p>
-                          MPS consumer group will be moved to LATEST only if
-                          consumer roup exists.
-                        </p>
-                      )}
-                      {value.modalRadioValue === "To Timestamp" && (
-                        <p>
-                          MPS consumer group will be moved to specific timestamp
-                          only if the consumer group exists.
-                        </p>
-                      )}
-                      {value.modalRadioValue === "Copy Offsets" && (
-                        <>
-                          <p>
-                            {" "}
-                            For Migrate, offsets will be copied from Application
-                            consumer group to MPS consumer group.
-                          </p>
-                          <p>
-                            {" "}
-                            For Rollback, offset will be copied from MPS
-                            consumer group to application conusmer group.
-                          </p>
-                        </>
-                      )}
-                    </div>
-                    <Divider />
-                    {regions.length > 1 ? (
-                      <div>
-                        <span className="modal-select-prefix">
-                          Select Region:
-                        </span>{" "}
-                        <Select
-                          defaultValue={selectedRegion}
-                          onSelect={(value) => {
-                            selectedRegion = value;
-                            setSelectedRegionValue(value);
-                          }}
-                          style={{
-                            width: 160,
-                          }}
-                          options={options}
-                        />
-                      </div>
-                    ) : (
-                      <div>Region: {regions}</div>
-                    )}
-                    {value.modalRadioValue === "To Timestamp" && (
-                      <div className="modal-select-wrapper">
-                        <span className="modal-select-prefix">
-                          Select Timestamp:
-                        </span>{" "}
-                        <DatePicker
-                          showTime
-                          onChange={(dateString) => {
-                            selectedTimeStamp = dateString;
-                          }}
-                          style={{
-                            width: 200,
-                          }}
-                        />
-                      </div>
-                    )}
-                    {value.modalRadioValue === "Copy Offsets" && (
-                      <>
-                        <Radio.Group
-                          defaultValue={"Migrate"}
-                          onChange={(e) => {
-                            checkCopyToMaps = e.target.value;
-                            setCopyOffsetsRadioValue(e.target.value);
-                            setOffsetResetInputValue("");
-                          }}
-                          className="modal-radio-group"
-                        >
-                          <Radio value={"Migrate"}>Migrate</Radio>
-                          <Radio value={"Rollback"}>Rollback</Radio>
-                        </Radio.Group>
-                        <div>
-                          From:
-                          <Input
-                            value={
-                              value.copyOffsetsRadioValue === "Migrate"
-                                ? value.offsetResetInputValue
-                                : `connect-${
-                                    record.regions[value.selectedRegionValue]
-                                      .connectorName
-                                  }`
-                            }
-                            onChange={(e) => {
-                              inputConsumerGroup = e.target.value;
-                              setOffsetResetInputValue(e.target.value);
-                            }}
-                            disabled={
-                              value.copyOffsetsRadioValue === "Rollback"
-                            }
-                          />
-                        </div>
-                        {console.log(inputConsumerGroup)}
-                        <div>
-                          To:
-                          <Input
-                            value={
-                              value.copyOffsetsRadioValue === "Rollback"
-                                ? value.offsetResetInputValue
-                                : `connect-${
-                                    record.regions[value.selectedRegionValue]
-                                      .connectorName
-                                  }`
-                            }
-                            onChange={(e) => {
-                              inputConsumerGroup = e.target.value;
-                              setOffsetResetInputValue(e.target.value);
-                            }}
-                            disabled={value.copyOffsetsRadioValue === "Migrate"}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </AppContext.Consumer>
-            </ConfigProvider>
-          ),
-          styles: modalStyles,
-          width: 620,
-          onOk() {
-            let data = {};
-            switch (selectedOffsetType) {
-              case "Earliest":
-                data = { offsetSpec: "EARLISET" };
-                break;
-              case "Latest":
-                data = { offsetSpec: "LATEST" };
-                break;
-              case "To Timestamp":
-                data = {
-                  offsetSpec: "TO_TIMESTAMP",
-                  moveToDate: selectedTimeStamp,
-                };
-                break;
-              case "Copy Offsets":
-                data = {
-                  offsetSpec: "COPY_OFFSETS",
-                  consumerGroup: inputConsumerGroup,
-                  copyToMPS: checkCopyToMaps,
-                };
-                break;
-              default:
-                break;
-            }
-
-            console.log(333, type);
-            getEndpoint(apiEndpoint.MPS.POST_TAAS_OFFSET_RESET, data, type)
-              .then((res) => {
-                modal.success({
-                  title: "SUCCESS",
-                  content: "Subscription Deleted Successfully !",
-                  okButtonProps: {
-                    className: "modal-ok-btn",
-                  },
-                  styles: modalStyles,
-                });
-
-                handleStateChanges("Earliest", "Migrate");
-              })
-              .catch((error) => {
-                modal.error({
-                  title: "ERROR",
-                  content: "Something went wrong. Please try again later.",
-                  okButtonProps: {
-                    className: "modal-ok-btn",
-                  },
-                  styles: modalStyles,
-                });
-              });
-          },
-          onCancel() {
-            handleStateChanges("Earliest", "Migrate");
-
-            Modal.destroyAll();
-          },
-          okText: "OFFSET RESET",
-          cancelText: "CANCEL",
-          okButtonProps: {
-            className: "modal-ok-btn",
-          },
-          cancelButtonProps: {
-            className: "modal-cancel-btn",
-          },
-        });
+      case "To Timestamp":
+        data = {
+          offsetSpec: "TO_TIMESTAMP",
+          moveToDate: selectedTimeStamp,
+        };
+        break;
+      case "Copy Offsets":
+        data = {
+          offsetSpec: "COPY_OFFSETS",
+          consumerGroup: inputConsumerGroup,
+          copyToMPS: checkCopyToMaps,
+        };
         break;
       default:
         break;
     }
+    getEndpoint(apiEndpoint.MPS.POST_TAAS_OFFSET_RESET, "", data)
+      .then((res) => {
+        Modal.success({
+          title: "SUCCESS",
+          content: "Subscription Deleted Successfully !",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          styles: modalStyles,
+        });
+
+        handleStateChanges("Earliest", "Migrate");
+      })
+      .catch((error) => {
+        Modal.error({
+          title: "ERROR",
+          content: "Something went wrong. Please try again later.",
+          okButtonProps: {
+            className: "modal-ok-btn",
+          },
+          styles: modalStyles,
+        });
+      });
   };
 
-  const columns = [
+  const handlePopoverItemClick = (record, type) => {
+    const regions = Object.keys(record.regions);
+    setActionData(record);
+    showActionModal();
+    hideActionPopover();
+    setClickedPopoverItem(type);
+    setRegions(regions);
+    setSelectedRegion(regions[0]);
+  };
+
+  const handleStateChanges = (radioValue, offsetRadio) => {
+    setModalRadioValue(radioValue);
+    setCopyOffsetsRadioValue(offsetRadio);
+    setOffsetResetInputValue("");
+    setSelectedRegion("");
+  };
+
+  const actionModuleSelectoptions = regions.map((item) => {
+    return {
+      value: item,
+      label: item,
+    };
+  });
+
+  const clusterSubTablecolumns = [
     {
       title: "Subscription Name",
       key: "mpsAppName",
@@ -628,7 +275,6 @@ const SubscriptionContentTable = () => {
       title: "APM Id",
       key: "apmId",
       width: "13%",
-      sorter: true,
       ...getColumnSearchProps("apmId"),
       render: (_, record) => <a>{record.apmId}</a>,
     },
@@ -677,47 +323,40 @@ const SubscriptionContentTable = () => {
             <>
               <p
                 onClick={() => {
-                  handleExecution("START", record);
-
-                  hideAction();
+                  handlePopoverItemClick(record, "Start Proxy");
                 }}
               >
                 {" "}
-                <a>Start Proxy</a>
+                <a style={{ color: "#0751A9" }}>Start Proxy</a>
               </p>
               <p
                 onClick={() => {
-                  handleExecution("STOP", record);
-
-                  hideAction();
+                  handlePopoverItemClick(record, "Stop Proxy");
                 }}
               >
                 {" "}
-                <a>Stop Proxy</a>
+                <a style={{ color: "#0751A9" }}>Stop Proxy</a>
               </p>
               <p
                 onClick={() => {
-                  handleExecution("DELETE", record);
-
-                  hideAction();
+                  handlePopoverItemClick(record, "Delete Subscription");
                 }}
               >
                 {" "}
-                <a>Delete Subscription</a>
+                <a style={{ color: "#0751A9" }}>Delete Subscription</a>
               </p>
               <p
                 onClick={() => {
-                  handleExecution("OFFSET_RESET", record);
-                  hideAction();
+                  handlePopoverItemClick(record, "Offset Reset");
                 }}
               >
                 {" "}
-                <a>Offset Reset</a>
+                <a style={{ color: "#0751A9" }}>Offset Reset</a>
               </p>
             </>
           }
           trigger="click"
-          open={actionOpen[record.id]}
+          open={isActionPopoverOpen[record.id]}
           onOpenChange={(newOpen) => {
             handleOpenChange(newOpen, record.id);
           }}
@@ -728,35 +367,266 @@ const SubscriptionContentTable = () => {
     },
   ];
 
-  return (
-    <AppContext.Provider
-      value={{
-        modalRadioValue: modalRadioValue,
-        copyOffsetsRadioValue: copyOffsetsRadioValue,
-        selectedRegionValue: selectedRegionValue,
-        offsetResetInputValue: offsetResetInputValue,
-        testValue: testValue,
-      }}
-    >
-      {isLoading ? (
-        <ComponentsSpin />
-      ) : (
-        <Table
-          style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
-          columns={columns}
-          dataSource={data}
-          pagination={{
-            showSizeChanger: true,
-            showQuickJumper: true,
-            total: total,
-            // size: "small",
-          }}
-          onChange={handleTableChange}
-        />
-      )}
+  const handleClusterSubTableChange = (pagination, _, extra) => {
+    abortFetching();
 
-      {contextHolder}
-    </AppContext.Provider>
+    if (extra.order === "ascend") {
+      dispatch(
+        setClusterSubSorter({
+          sorterOrder: "asc",
+          sorterKey: extra.columnKey,
+        })
+      );
+    } else if (extra.order === "descend") {
+      dispatch(
+        setClusterSubSorter({
+          sorterOrder: "desc",
+          sorterKey: extra.columnKey,
+        })
+      );
+    } else {
+      dispatch(
+        setClusterSubSorter({
+          sorterOrder: "",
+          sorterKey: "",
+        })
+      );
+    }
+
+    dispatch(
+      setClusterSubPaginator({
+        ...clusterSubPaginator,
+        pageSize: pagination.pageSize,
+        page: pagination.current,
+      })
+    );
+  };
+  const modalStyles = {
+    content: {
+      padding: "32px 32px 24px",
+      borderRadius: 0,
+    },
+  };
+
+  return (
+    <>
+      <Table
+        style={{ border: "1px solid	#d7d7d7", margin: "12px 0" }}
+        columns={clusterSubTablecolumns}
+        dataSource={clusterSubData}
+        pagination={{
+          showSizeChanger: true,
+          showQuickJumper: true,
+          total: total,
+        }}
+        onChange={handleClusterSubTableChange}
+      />
+      {(clickedPopoverItem === "Start Proxy" ||
+        clickedPopoverItem === "Stop Proxy") && (
+        <Modal
+          title={`Subscription Name: ${actionData.mpsAppName} `}
+          open={isActionModalOpen}
+          onCancel={handleModalCancelBtn}
+          onOk={() => handleStartStopBtn(clickedPopoverItem)}
+          cancelText={"CANCEL"}
+          okText={clickedPopoverItem === "Start Proxy" ? "START" : "STOP"}
+          okButtonProps={{ className: "modal-ok-btn" }}
+          cancelButtonProps={{ className: "modal-cancel-btn" }}
+          width={416}
+          closeIcon={false}
+          // style={{ color: "#000000D9" }}
+        >
+          <p>{`Do you want to ${clickedPopoverItem.toLocaleLowerCase()} connection?`}</p>
+          {regions.length > 1 ? (
+            <div>
+              <span className="modal-select-prefix">Select Region:</span>{" "}
+              <Select
+                defaultValue={selectedRegion}
+                style={{
+                  width: 160,
+                }}
+                onSelect={(value) => {
+                  setSelectedRegion(value);
+                }}
+                options={actionModuleSelectoptions}
+              />
+            </div>
+          ) : (
+            <div>Region: {regions}</div>
+          )}
+        </Modal>
+      )}
+      {clickedPopoverItem === "Delete Subscription" && (
+        <Modal
+          title={`Subscription Name: ${actionData.mpsAppName} `}
+          open={isActionModalOpen}
+          onCancel={handleModalCancelBtn}
+          onOk={handleDeleteSubBtn}
+          cancelText={"CANCEL"}
+          okText={"DELETE"}
+          okButtonProps={{ className: "modal-ok-btn" }}
+          cancelButtonProps={{ className: "modal-cancel-btn" }}
+          width={416}
+          closeIcon={false}
+        >
+          <p>
+            This operation cannot be undone. This will permanently delete the
+            subscription.
+          </p>
+          <p>
+            This subscription will be deleted in following regions:{" "}
+            <span style={{ fontWeight: "bolder" }}>{regions.join(", ")}</span>
+          </p>
+        </Modal>
+      )}
+      {clickedPopoverItem === "Offset Reset" && (
+        <Modal
+          title={`Subscription Name: ${actionData.mpsAppName} `}
+          open={isActionModalOpen}
+          onCancel={handleModalCancelBtn}
+          onOk={handleOffsetResetBtn}
+          cancelText={"CANCEL"}
+          okText={clickedPopoverItem.toUpperCase()}
+          okButtonProps={{ className: "modal-ok-btn" }}
+          cancelButtonProps={{ className: "modal-cancel-btn" }}
+          width={416}
+          closeIcon={false}
+        >
+          <div>
+            <div>
+              please select offset action to subscription{" "}
+              {actionData.subscriptionname}?
+            </div>
+            <Radio.Group
+              value={modalRadioValue}
+              onChange={(e) => {
+                setModalRadioValue(e.target.value);
+                setSelectedOffsetType(e.target.value);
+              }}
+              className="modal-radio-group"
+            >
+              <Radio value={"Earliest"}>Earliest</Radio>
+              <Radio value={"Latest"}>Latest</Radio>
+              <Radio value={"To Timestamp"}>To Timestamp</Radio>
+              <Radio value={"Copy Offsets"}>Copy Offsets</Radio>
+            </Radio.Group>
+            <div className="radioReminder">
+              {modalRadioValue === "Earliest" && (
+                <p>
+                  {" "}
+                  MPS consumer group will be moved to earliest offsets only if
+                  the consumer group exists.
+                </p>
+              )}
+              {modalRadioValue === "Latest" && (
+                <p>
+                  MPS consumer group will be moved to LATEST only if consumer
+                  roup exists.
+                </p>
+              )}
+              {modalRadioValue === "To Timestamp" && (
+                <p>
+                  MPS consumer group will be moved to specific timestamp only if
+                  the consumer group exists.
+                </p>
+              )}
+              {modalRadioValue === "Copy Offsets" && (
+                <>
+                  <p>
+                    {" "}
+                    For Migrate, offsets will be copied from Application
+                    consumer group to MPS consumer group.
+                  </p>
+                  <p>
+                    {" "}
+                    For Rollback, offset will be copied from MPS consumer group
+                    to application conusmer group.
+                  </p>
+                </>
+              )}
+            </div>
+            <Divider />
+            {regions.length > 1 ? (
+              <div>
+                <span className="modal-select-prefix">Select Region:</span>{" "}
+                <Select
+                  defaultValue={selectedRegion}
+                  onSelect={(value) => {
+                    setSelectedRegion(value);
+                  }}
+                  style={{
+                    width: 160,
+                  }}
+                  options={actionModuleSelectoptions}
+                />
+              </div>
+            ) : (
+              <div>Region: {regions}</div>
+            )}
+            {modalRadioValue === "To Timestamp" && (
+              <div className="modal-select-wrapper">
+                <span className="modal-select-prefix">Select Timestamp:</span>{" "}
+                <DatePicker
+                  showTime
+                  onChange={(dateString) => {
+                    setSelectedTimeStamp(dateString);
+                  }}
+                  style={{
+                    width: 200,
+                  }}
+                />
+              </div>
+            )}
+            {modalRadioValue === "Copy Offsets" && (
+              <>
+                <Radio.Group
+                  defaultValue={"Migrate"}
+                  onChange={(e) => {
+                    setCheckCopyToMaps(e.target.value);
+                    setCopyOffsetsRadioValue(e.target.value);
+                    setOffsetResetInputValue("");
+                  }}
+                  className="modal-radio-group"
+                >
+                  <Radio value={"Migrate"}>Migrate</Radio>
+                  <Radio value={"Rollback"}>Rollback</Radio>
+                </Radio.Group>
+                <div>
+                  From:
+                  <Input
+                    value={
+                      copyOffsetsRadioValue === "Migrate"
+                        ? offsetResetInputValue
+                        : `connect-${actionData?.regions[selectedRegion]?.connectorName}`
+                    }
+                    onChange={(e) => {
+                      setInputConsumerGroup(e.target.value);
+                      setOffsetResetInputValue(e.target.value);
+                    }}
+                    disabled={copyOffsetsRadioValue === "Rollback"}
+                  />
+                </div>
+                <div>
+                  To:
+                  <Input
+                    value={
+                      copyOffsetsRadioValue === "Rollback"
+                        ? offsetResetInputValue
+                        : `connect-${actionData?.regions[selectedRegion]?.connectorName}`
+                    }
+                    onChange={(e) => {
+                      setInputConsumerGroup(e.target.value);
+                      setOffsetResetInputValue(e.target.value);
+                    }}
+                    disabled={copyOffsetsRadioValue === "Migrate"}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </Modal>
+      )}
+    </>
   );
 };
 

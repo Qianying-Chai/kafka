@@ -7,7 +7,7 @@ import ComponentsContent from "../../../Components/ComponentsContent";
 import ComponentsBreadcrumb from "../../../Components/ComponentsBreadcrumb";
 import ComponentsTitle from "../../../Components/ComponentsTitle";
 import ComponentsSpin from "../../../Components/ComponentSpin";
-import SubscriptionsProxyContentTable from "./SubscriptionsProxyContentTable";
+import SubscriptionspProxyContentTable from "./SubscriptionsProxyContentTable";
 
 import {
   setTaasSubProxyPaginator,
@@ -18,18 +18,20 @@ import { Button, Tabs } from "antd";
 
 const SubscriptionsProxyContent = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
 
-  const breadcrumb = [
-    {
-      title: "Home",
-    },
-    {
-      title: "Kafka",
-    },
-    {
-      title: categoryConstants.SUBSCRIPTIONS,
-    },
-  ];
+  const taasSubProxyPaginator = useSelector(
+    (state) => state.taasSubProxyPaginator
+  );
+  const { page, pageSize } = taasSubProxyPaginator;
+
+  const { sorterOrder, sorterKey } = useSelector(
+    (state) => state.taasSubProxySorter
+  );
+
+  const { filterKey, filterValue } = useSelector(
+    (state) => state.taasSubProxyFilter
+  );
 
   const tabsItems = [
     {
@@ -53,32 +55,26 @@ const SubscriptionsProxyContent = () => {
       ),
     },
   ];
-
-  const dispatch = useDispatch();
-  const taasSubProxyPaginator = useSelector(
-    (state) => state.taasSubProxyPaginator
-  );
-  const { page, pageSize } = taasSubProxyPaginator;
-
-  const { sorterOrder, sorterKey } = useSelector(
-    (state) => state.taasSubProxySorter
-  );
-  const { filterKey, filterValue } = useSelector(
-    (state) => state.taasSubProxyFilter
-  );
+  const breadcrumb = [
+    {
+      title: "Home",
+    },
+    {
+      title: "Kafka",
+    },
+    {
+      title: categoryConstants.SUBSCRIPTIONS,
+    },
+  ];
 
   const abortController = new AbortController();
   const signal = abortController.signal;
 
   const handleGetSubProxyData = () => {
-    const MPS_SUBSCRIPTION_URL = `http://localhost:1337/api/mps-subscriptions?${
-      filterValue || sorterOrder
-        ? ""
-        : `pagination[page]=${page}&pagination[pageSize]=${pageSize}`
-    }${filterValue && `filters[${filterKey}][$contains]=${filterValue}`}${
-      sorterOrder && `&sort=${sorterKey}:${sorterOrder}`
-    }`;
-    fetch(MPS_SUBSCRIPTION_URL, { signal })
+    const TAAS_SUBSCRIPTION_URL = `http://localhost:1337/api/mps-subscriptions?pagination[page]=${page}&pagination[pageSize]=${pageSize}${
+      filterValue && `&filters[${filterKey}][$contains]=${filterValue}`
+    }${sorterOrder && `&sort=${sorterKey}:${sorterOrder}`}`;
+    fetch(TAAS_SUBSCRIPTION_URL, { signal })
       .then((res) => res.json())
       .then((res) => {
         setIsLoading(false);
@@ -147,7 +143,7 @@ const SubscriptionsProxyContent = () => {
         {isLoading ? (
           <ComponentsSpin />
         ) : (
-          <SubscriptionsProxyContentTable
+          <SubscriptionspProxyContentTable
             abortFetching={abortFetching}
             handleGetSubProxyData={handleGetSubProxyData}
           />

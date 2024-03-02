@@ -6,7 +6,7 @@ import categoryConstants from "../../../../common/categoryConstants";
 import SourceTopicForm from "./Form/SourceTopicForm";
 import TargetApplicationSelectionForm from "./Form/TargetApplicationSelectionForm";
 import "../../Style/CreateSubscriptionNonproxy.css";
-import { Button, ConfigProvider, Divider } from "antd";
+import { Button, ConfigProvider, Divider, Form } from "antd";
 
 const CreateSubscriptionsNonProxy = () => {
   return (
@@ -39,22 +39,25 @@ const CreateSubscriptionsNonProxy = () => {
             },
           ]}
         />
+
         <div className="content-banner">
           <ComponentsTitle title={categoryConstants.CREATE_SUBSCRIPTION} />
         </div>
       </div>
       <ComponentsContent>
-        <SourceTopicForm />
-        <TargetApplicationSelectionForm />
-        <Divider />
-        <div className="create-buttons-wrapper">
-          <Button shape="round" className="cancel-button">
-            CANCEL
-          </Button>
-          <Button shape="round" disabled className="disable-submit-button">
-            SUBMIT
-          </Button>
-        </div>
+        <Form>
+          <SourceTopicForm />
+          <TargetApplicationSelectionForm />
+          <Divider />
+          <div className="create-buttons-wrapper">
+            <Button shape="round" className="cancel-button">
+              CANCEL
+            </Button>
+            <Button shape="round" disabled className="disable-submit-button">
+              SUBMIT
+            </Button>
+          </div>
+        </Form>
       </ComponentsContent>
     </ConfigProvider>
   );
