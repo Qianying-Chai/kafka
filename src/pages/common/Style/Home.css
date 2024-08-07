@@ -1,0 +1,25 @@
+.home-wrapper {
+  font-size: 21px;
+  margin: 100px;
+  font-weight: 600;
+}
+
+.home-wrapper,
+.home-link {
+  display: flex;
+  justify-content: center;
+}
+
+.home-link {
+  margin-top: 25px;
+}
+
+.home-link,
+.home-link:hover {
+  color: #551a8b;
+  text-decoration: underline;
+}
+
+.home-link:active {
+  color: red;
+}

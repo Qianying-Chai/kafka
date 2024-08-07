@@ -1,0 +1,26 @@
+.create-flow-select,
+.create-flow-input,
+.create-flow-checkbox {
+  margin: 0 0 10px;
+  width: 100%;
+}
+
+.create-buttons-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cancel-button,
+.disable-submit-button,
+.primary-submit-button {
+  letter-spacing: 1pt;
+  padding: 4px 15px;
+  width: 135px;
+  height: 32px;
+}
+
+.primary-submit-button {
+  background-color: #041f41;
+  color: #ffffff;
+}

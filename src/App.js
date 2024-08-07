@@ -1,18 +1,24 @@
 import Header from "./pages/common/Header";
 import Sider from "./pages/common/Sider.jsx";
 import categoryConstants from "./pages/common/categoryConstants";
-import Topics from "./pages/Taas/Topics";
-import Trash from "./pages/Taas/Trash";
-import SubscriptionApprovals from "./pages/Taas/SubscriptionApprobals";
-import Subscriptions from "./pages/Taas/Subscriptions";
-import Applications from "./pages/Taas/Applications";
-import UserRequests from "./pages/Taas/UserRequests";
-import Clusters from "./pages/Cluster/Clusters";
-import MigratedClusters from "./pages/Cluster/MigratedClusters";
-import Subscription from "./pages/Cluster/Subscription";
-import UserRequestsLegacy from "./pages/Cluster/UserRequestsLegacy";
+import Home from "./pages/common/Home.jsx";
+import Topics from "./pages/Taas/Topics/Topics";
+import CreateTopic from "./pages/Taas/Topics/CreateTopics/CreateTopic";
+import Trash from "./pages/Taas/Trash/Trash";
+import SubscriptionApprovals from "./pages/Taas/SubscriptionApprovals/SubscriptionApprovals";
+import SubscriptionsNonProxy from "./pages/Taas/Subscriptions/SubscriptionsNonProxy/SubscriptionsNonProxy";
+import CreateSubscriptionsNonProxy from "./pages/Taas/Subscriptions/SubscriptionsNonProxy/CreateSubscriptions/CreateSubscriptionsNonProxy";
+import CreateSubscriptionsProxy from "./pages/Taas/Subscriptions/SubscriptionsProxy/CreateSubscriptions/CreateSubscriptionsProxy";
+import SubscriptionsProxy from "./pages/Taas/Subscriptions/SubscriptionsProxy/SubscriptionsProxy";
+import Applications from "./pages/Taas/Applications/Applications";
+import UserRequests from "./pages/Taas/UserRequests/UserRequests";
+import Clusters from "./pages/Cluster/Clusters/Clusters";
+import CreateCluster from "./pages/Cluster/Clusters/CreateCluster/CreateCluster";
+import MigratedClusters from "./pages/Cluster/MigratedClusters/MigratedClusters";
+import Subscription from "./pages/Cluster/Subscription/Subscription";
+import CreateSubscription from "./pages/Cluster/Subscription/CreateSubscription/CreateSubscription";
+import UserRequestsLegacy from "./pages/Cluster/UserRequestsLegacy/UserRequestsLegacy";
 import Support from "./pages/Resources/Support";
-import Breadcrumb from "./pages/common/Breadcrumb";
 import Footer from "./pages/common/Footer";
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "antd";
@@ -26,54 +32,77 @@ function App() {
           <Sider />
           <Layout
             style={{
-              padding: "0 24px 24px",
+              padding: "25px 50px 25px 40px",
               height: "fit-content",
             }}
           >
-            <Breadcrumb />
             <Routes>
+              <Route path={"/"} element={<Home />} />
               <Route
-                path={categoryConstants.TOPICS.toLowerCase()}
+                path={`kafka/${categoryConstants.TOPICS.toLowerCase()}`}
                 element={<Topics />}
               />
               <Route
-                path={categoryConstants.TRASH.toLowerCase()}
+                path={`kafka/${categoryConstants.TOPICS.toLowerCase()}/create`}
+                element={<CreateTopic />}
+              />
+              <Route
+                path={`kafka/${categoryConstants.TRASH.toLowerCase()}`}
                 element={<Trash />}
               />
               <Route
-                path={categoryConstants.SUBSCRIPTIONS.toLowerCase()}
-                element={<Subscriptions />}
+                path={`kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=nonProxy`}
+                element={<SubscriptionsNonProxy />}
               />
               <Route
-                path={categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()}
+                path={`/kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=nonProxy/create-non-proxy`}
+                element={<CreateSubscriptionsNonProxy />}
+              />
+
+              <Route
+                path={`kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=proxy`}
+                element={<SubscriptionsProxy />}
+              />
+              <Route
+                path={`/kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=proxy/create`}
+                element={<CreateSubscriptionsProxy />}
+              />
+              <Route
+                path={`kafka/subscriptionRequests`}
                 element={<SubscriptionApprovals />}
               />
               <Route
-                path={categoryConstants.APPLICATIONS.toLowerCase()}
+                path={`kafka/${categoryConstants.APPLICATIONS.toLowerCase()}`}
                 element={<Applications />}
               />
+              <Route path={`kafka/requests`} element={<UserRequests />} />
               <Route
-                path={categoryConstants.USER_REQUESTS.toLowerCase()}
-                element={<UserRequests />}
-              />
-              <Route
-                path={categoryConstants.CLUSTERS.toLowerCase()}
+                path={`kafka/${categoryConstants.CLUSTERS.toLowerCase()}`}
                 element={<Clusters />}
               />
               <Route
-                path={categoryConstants.MIGRATED_CLUSTERS.toLowerCase()}
+                path={`kafka/${categoryConstants.CLUSTERS.toLowerCase()}/create`}
+                element={<CreateCluster />}
+              />
+
+              <Route
+                path={`kafka/migrated-clusters`}
                 element={<MigratedClusters />}
               />
               <Route
-                path={categoryConstants.SUBSCRIPTION.toLowerCase()}
+                path={`kafka/mps-clusters-subscriptions`}
                 element={<Subscription />}
               />
               <Route
-                path={categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()}
+                path={`kafka/mps-clusters-subscriptions/create`}
+                element={<CreateSubscription />}
+              />
+              <Route
+                path={`kafka/legacy-requests`}
                 element={<UserRequestsLegacy />}
               />
               <Route
-                path={categoryConstants.SUPPORT.toLowerCase()}
+                path={`kafka/${categoryConstants.SUPPORT.toLowerCase()}`}
                 element={<Support />}
               />
             </Routes>

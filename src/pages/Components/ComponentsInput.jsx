@@ -8,7 +8,7 @@ const ComponentsInput = (props) => {
         size="large"
         placeholder={props.placeholder}
         prefix={<SearchOutlined />}
-        style={{ margin: "18px 0px", borderRadius: "0px" }}
+        style={{ borderRadius: "0px", marginBottom: "5px" }}
       />
     </>
   );

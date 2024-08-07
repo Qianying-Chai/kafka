@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedSiderKey } from "../../redux/action";
 import "./Style/Sider.css";
 import {
   ReadFilled,
@@ -12,8 +14,6 @@ import {
 } from "@ant-design/icons";
 import { Layout, Menu, theme, ConfigProvider } from "antd";
 import categoryConstants from "./categoryConstants";
-import { useDispatch } from "react-redux";
-import { setItemsKey } from "../../redux/action";
 
 const Sider = () => {
   const {
@@ -25,97 +25,61 @@ const Sider = () => {
   const items = [
     {
       key: "Topic as a Service (Lettera)",
-      label: <div>Topic as a Service (Lettera)</div>,
+      label: "Topic as a Service (Lettera)",
       children: [
         {
           key: "Topics",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Topics"));
-              }}
-            >
-              <Link to={`/${categoryConstants.TOPICS.toLowerCase()}`}>
-                {categoryConstants.TOPICS}
-              </Link>
-            </div>
+            <Link to={`kafka/${categoryConstants.TOPICS.toLowerCase()}`}>
+              {categoryConstants.TOPICS}
+            </Link>
           ),
           icon: React.createElement(ReadFilled),
         },
         {
           key: "Trash",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Trash"));
-              }}
-            >
-              <Link to={`/${categoryConstants.TRASH.toLowerCase()}`}>
-                {categoryConstants.TRASH}
-              </Link>
-            </div>
+            <Link to={`kafka/${categoryConstants.TRASH.toLowerCase()}`}>
+              {categoryConstants.TRASH}
+            </Link>
           ),
           icon: React.createElement(DeleteFilled),
         },
         {
-          key: "Subscriptions",
+          key: "Taas Subscriptions",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Subscriptions"));
-              }}
+            <Link
+              to={`kafka/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}_active_tab=nonProxy`}
             >
-              <Link to={`/${categoryConstants.SUBSCRIPTIONS.toLowerCase()}`}>
-                {categoryConstants.SUBSCRIPTIONS}
-              </Link>
-            </div>
+              {categoryConstants.SUBSCRIPTIONS}
+            </Link>
           ),
           icon: React.createElement(PlusCircleFilled),
         },
         {
           key: "Subscription Approvals",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Subscription Approvals"));
-              }}
-            >
-              <Link
-                to={`/${categoryConstants.SUBSCRIPTIONS_APPROVALS.toLowerCase()}`}
-              >
-                {categoryConstants.SUBSCRIPTIONS_APPROVALS.replace("_", " ")}
-              </Link>
-            </div>
+            <Link to={`kafka/subscriptionRequests`}>
+              {categoryConstants.SUBSCRIPTIONS_APPROVALS.replace("_", " ")}
+            </Link>
           ),
           icon: React.createElement(CheckCircleFilled),
         },
         {
           key: "Applications",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Applications"));
-              }}
-            >
-              <Link to={`/${categoryConstants.APPLICATIONS.toLowerCase()}`}>
-                {categoryConstants.APPLICATIONS}
-              </Link>
-            </div>
+            <Link to={`kafka/${categoryConstants.APPLICATIONS.toLowerCase()}`}>
+              {categoryConstants.APPLICATIONS}
+            </Link>
           ),
           icon: React.createElement(ReadFilled),
         },
         {
           key: "User Requests",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("User Requests"));
-              }}
-            >
-              <Link to={`/${categoryConstants.USER_REQUESTS.toLowerCase()}`}>
-                {categoryConstants.USER_REQUESTS.replace("_", " ")}
-              </Link>
-            </div>
+            <Link to={`kafka/requests`}>
+              {categoryConstants.USER_REQUESTS.replace("_", " ")}
+            </Link>
           ),
           icon: React.createElement(QuestionCircleFilled),
         },
@@ -128,64 +92,34 @@ const Sider = () => {
         {
           key: "Clusters",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Clusters"));
-              }}
-            >
-              <Link to={`/${categoryConstants.CLUSTERS.toLowerCase()}`}>
-                {categoryConstants.CLUSTERS}
-              </Link>
-            </div>
+            <Link to={`kafka/${categoryConstants.CLUSTERS.toLowerCase()}`}>
+              {categoryConstants.CLUSTERS}
+            </Link>
           ),
           icon: React.createElement(HddFilled),
         },
         {
           key: "Migrated Clusters",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Migrated Clusters"));
-              }}
-            >
-              <Link
-                to={`/${categoryConstants.MIGRATED_CLUSTERS.toLowerCase()}`}
-              >
-                {categoryConstants.MIGRATED_CLUSTERS.replace("_", " ")}
-              </Link>
-            </div>
+            <Link to={`kafka/migrated-clusters`}>
+              {categoryConstants.MIGRATED_CLUSTERS.replace("_", " ")}
+            </Link>
           ),
           icon: React.createElement(HddFilled),
         },
         {
-          key: "Subscription",
+          key: "Cluster Subscription",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Subscription"));
-              }}
-            >
-              <Link to={`/${categoryConstants.SUBSCRIPTION.toLowerCase()}`}>
-                {categoryConstants.SUBSCRIPTION}
-              </Link>
-            </div>
+            <Link to={`kafka/mps-clusters-subscriptions`}>
+              {categoryConstants.SUBSCRIPTION}
+            </Link>
           ),
           icon: React.createElement(PlusCircleFilled),
         },
         {
           key: "User Requests (Legacy)",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("User Requests (Legacy)"));
-              }}
-            >
-              <Link
-                to={`/${categoryConstants.USERE_REQUESTS_LEGACY.toLowerCase()}`}
-              >
-                User Requests (Legacy)
-              </Link>
-            </div>
+            <Link to={`kafka/legacy-requests`}>User Requests (Legacy)</Link>
           ),
           icon: React.createElement(QuestionCircleFilled),
         },
@@ -199,15 +133,9 @@ const Sider = () => {
         {
           key: "Supprot",
           label: (
-            <div
-              onClick={() => {
-                dispatch(setItemsKey("Supprot"));
-              }}
-            >
-              <Link to={`/${categoryConstants.SUPPORT.toLowerCase()}`}>
-                {categoryConstants.SUPPORT}
-              </Link>
-            </div>
+            <Link to={`kafka/${categoryConstants.SUPPORT.toLowerCase()}`}>
+              {categoryConstants.SUPPORT}
+            </Link>
           ),
           icon: React.createElement(SettingFilled),
         },
@@ -215,6 +143,9 @@ const Sider = () => {
     },
   ];
 
+  const handleSiderSelect = ({ key }) => {
+    dispatch(setSelectedSiderKey(key));
+  };
   return (
     <ConfigProvider
       theme={{
@@ -245,7 +176,6 @@ const Sider = () => {
             marginLeft: "-12px",
           }}
         >
-          <div></div>
           <Menu
             mode="inline"
             items={items}
@@ -253,6 +183,7 @@ const Sider = () => {
             style={{
               color: "#041f41",
             }}
+            onSelect={handleSiderSelect}
           />
         </div>
       </Layout.Sider>

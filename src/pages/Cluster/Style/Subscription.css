@@ -1,0 +1,50 @@
+.ant-popover-inner-content {
+  padding: 12px 16px;
+  min-width: 130px;
+}
+.ant-popover-inner {
+  border-radius: 0px !important;
+}
+
+.ant-popover-content p {
+  margin: 10px 0;
+}
+
+.modal-title,
+.modal-content {
+  color: #000000d9;
+}
+
+.modal-content {
+  margin-right: -30px;
+}
+
+.modal-title {
+  font-weight: normal;
+}
+
+.modal-cancel-btn,
+.modal-ok-btn {
+  letter-spacing: 1pt;
+  padding: 4px 15px;
+  width: 135px;
+  height: 32px;
+  border-radius: 32px;
+  margin-top: 12px;
+}
+
+.modal-ok-btn {
+  background-color: #041f41;
+}
+
+.modal-radio-group,
+.modal-select-wrapper {
+  margin: 10px 0;
+}
+
+.modal-select-prefix {
+  margin-right: 10px;
+}
+.radioReminder {
+  color: #ff0000;
+}
